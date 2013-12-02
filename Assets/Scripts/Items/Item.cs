@@ -1,6 +1,10 @@
 ﻿using System.Collections.Generic;
 public class Item {
     Dictionary<StatName, BaseStat> modifiedStats;
+    public Dictionary<StatName, BaseStat> GetModifiedStats
+    {
+        get { return modifiedStats; }
+    }
 
     public Item()
     {
@@ -25,6 +29,7 @@ public class Item {
                 break;
         }
     }
+
 
 }
 

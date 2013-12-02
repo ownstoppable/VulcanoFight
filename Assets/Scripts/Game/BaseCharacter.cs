@@ -276,10 +276,10 @@ public class BaseCharacter : MonoBehaviour {
         switch (skill)
         {
             case SkillName.Teleport:
-                skills.Add(SkillName.Teleport, new TeleportSkill(10, 10));                
+                skills.Add(skill, new TeleportSkill(10, 10));                
                 break;
             case SkillName.Homingball:
-                skills.Add(SkillName.Homingball, new HomingBallSkill(1, 200, 10, 5, 10, 0.5f));
+                skills.Add(skill, new HomingBallSkill(1, 200, 10, 5, 10, 0.5f));
                 break;
             default:
                 break;
@@ -287,16 +287,11 @@ public class BaseCharacter : MonoBehaviour {
     }
 
     public void AddItem(ItemName item) {
-        switch (item)
+        Item it = new Item(item);
+        inventory.Add(item, it);
+        foreach (KeyValuePair<StatName,BaseStat> pair in it.GetModifiedStats)
         {
-            case ItemName.Boots:
-                break;
-            case ItemName.Staff:
-                break;
-            case ItemName.Cloak:
-                break;
-            default:
-                break;
+            characterStats[pair.Key].ChangeCurTotal(pair.Value.CurValue);
         }
     }
 
@@ -313,7 +308,7 @@ public class BaseCharacter : MonoBehaviour {
         characterStats = new Dictionary<StatName, BaseStat>();
 
         characterStats.Add(StatName.HP, new BaseStat(1000));
-        characterStats.Add(StatName.Armor, new BaseStat());
+        characterStats.Add(StatName.Armor, new BaseStat(1));
         characterStats.Add(StatName.CDR, new BaseStat(1));
         characterStats.Add(StatName.CSpeed, new BaseStat(1));
         characterStats.Add(StatName.Damage, new BaseStat());

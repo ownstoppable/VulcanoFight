@@ -30,7 +30,7 @@ public class PlayerController : BaseCharacter {
 
         InitRound();
 
-        characterStats[StatName.Armor].ChangeCurTotal(0.5f);
+        characterStats[StatName.Armor].ChangeCurTotal(-0.5f);
 	}
  
 	void Update () {

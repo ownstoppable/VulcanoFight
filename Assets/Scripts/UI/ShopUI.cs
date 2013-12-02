@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 using System;
 
 public class ShopUI : MonoBehaviour {
@@ -8,10 +9,14 @@ public class ShopUI : MonoBehaviour {
     private float shopInitTime;
     public GUISkin mySkin;
     private PlayerController pC;
-    public Texture2D homingBallIcon;
-    public Texture2D teleportIcon;
-    public Texture2D staffIcon;
-    public Texture2D bootsIcon;
+    public itemUI homingBallUI;
+    public itemUI teleportUI;
+    public itemUI staffUI;
+    public itemUI bootsUI;
+    public itemUI cloakUI;
+
+    private Dictionary<SkillName, itemUI> skills;
+    private Dictionary<ItemName, itemUI> items;
 
     private enum MenuType
     {
@@ -23,11 +28,26 @@ public class ShopUI : MonoBehaviour {
     }
     private MenuType currentMenu;
 
+    [Serializable]
+    public class itemUI {
+        public string name;
+        public Texture2D texture;
+        public int price;
+    }
+
     void Start() {
         shopTime = 90;
         shopInitTime = Time.time;
         currentMenu = MenuType.MainMenu;
         pC = GameOptions.Instance.playerObj.GetComponent<PlayerController>();
+        skills = new Dictionary<SkillName, itemUI>();
+        skills.Add(SkillName.Homingball, homingBallUI);
+        skills.Add(SkillName.Teleport, teleportUI);
+
+        items = new Dictionary<ItemName, itemUI>();
+        items.Add(ItemName.Staff, staffUI);
+        items.Add(ItemName.Boots, bootsUI);
+        items.Add(ItemName.Cloak, cloakUI);
     }
 
     void OnGUI() {
@@ -86,70 +106,42 @@ public class ShopUI : MonoBehaviour {
                 GUILayout.BeginArea(new Rect(Screen.width * 0.25f, Screen.height * 0.4f, Screen.width * 0.5f, Screen.height * 0.4f));
                 GUILayout.BeginHorizontal();
                     GUILayout.FlexibleSpace();
-                    if (!pC.HasSkill(SkillName.Homingball))
+                    foreach (var item in Enum.GetValues(typeof(SkillName)))
                     {
-                        if (!first) GUILayout.FlexibleSpace();
+                        if ((SkillName)item != SkillName.None && !pC.HasSkill((SkillName)item))
+                        {
+                            if (!first) GUILayout.FlexibleSpace();
                             GUILayout.BeginVertical(GUILayout.MaxWidth(100));
                             GUILayout.BeginHorizontal();
-                                GUILayout.FlexibleSpace();
-                                GUILayout.Label("Homing Ball", "GLabelSmall");
-                                GUILayout.FlexibleSpace();
+                            GUILayout.FlexibleSpace();
+                            GUILayout.Label(skills[(SkillName)item].name, "GLabelSmall");
+                            GUILayout.FlexibleSpace();
                             GUILayout.EndHorizontal();
                             GUILayout.Space(20);
                             GUILayout.BeginHorizontal();
-                                GUILayout.FlexibleSpace();
-                                if (GUILayout.Button(homingBallIcon, GUILayout.MaxWidth(64), GUILayout.MaxHeight(64))) {
-                                    if (pC.HasGold(200))
-                                    {
-                                        pC.AddSkill(SkillName.Homingball);
-                                    }
-                                    else {
-                                        Debug.Log("Not enough money");
-                                    }
+                            GUILayout.FlexibleSpace();
+                            if (GUILayout.Button(skills[(SkillName)item].texture, GUILayout.MaxWidth(64), GUILayout.MaxHeight(64)))
+                            {
+                                if (pC.HasGold(skills[(SkillName)item].price))
+                                {
+                                    pC.AddSkill((SkillName)item);
                                 }
-                                GUILayout.FlexibleSpace();
-                            GUILayout.EndHorizontal();
-                            GUILayout.Space(20);
-                            GUILayout.BeginHorizontal();
-                                GUILayout.FlexibleSpace();
-                                GUILayout.Label("200g", "GLabelSmall");
-                                GUILayout.FlexibleSpace();
-                            GUILayout.EndHorizontal();
-                        GUILayout.EndVertical();
-                        if (first) first = false;
-                    }
-                    if (!pC.HasSkill(SkillName.Teleport))
-                    {
-                        if (!first) GUILayout.FlexibleSpace();
-                        GUILayout.BeginVertical(GUILayout.MaxWidth(100));
-                            GUILayout.BeginHorizontal();
-                                GUILayout.FlexibleSpace();
-                                GUILayout.Label("Teleport", "GLabelSmall");
-                                GUILayout.FlexibleSpace();
-                            GUILayout.EndHorizontal();
-                            GUILayout.Space(20);
-                            GUILayout.BeginHorizontal();
-                                GUILayout.FlexibleSpace();
-                                if (GUILayout.Button(teleportIcon, GUILayout.MaxWidth(64), GUILayout.MaxHeight(64))) {
-                                    if (pC.HasGold(300))
-                                    {
-                                        pC.AddSkill(SkillName.Teleport);
-                                    }
-                                    else
-                                    {
-                                        Debug.Log("Not enough money");
-                                    }
+                                else
+                                {
+                                    Debug.Log("Not enough money " + skills[(SkillName)item].price);
                                 }
-                                GUILayout.FlexibleSpace();
+                            }
+                            GUILayout.FlexibleSpace();
                             GUILayout.EndHorizontal();
                             GUILayout.Space(20);
                             GUILayout.BeginHorizontal();
-                                GUILayout.FlexibleSpace();
-                                GUILayout.Label("300g", "GLabelSmall");
-                                GUILayout.FlexibleSpace();
+                            GUILayout.FlexibleSpace();
+                            GUILayout.Label(skills[(SkillName)item].price + "g", "GLabelSmall");
+                            GUILayout.FlexibleSpace();
                             GUILayout.EndHorizontal();
-                        GUILayout.EndVertical();
-                        if (first) first = false;
+                            GUILayout.EndVertical();
+                            if (first) first = false;
+                        }
                     }
                     GUILayout.FlexibleSpace();
                 GUILayout.EndHorizontal();
@@ -165,70 +157,42 @@ public class ShopUI : MonoBehaviour {
                 GUILayout.BeginArea(new Rect(Screen.width * 0.25f, Screen.height * 0.4f, Screen.width * 0.5f, Screen.height * 0.4f));
                 GUILayout.BeginHorizontal();
                     GUILayout.FlexibleSpace();
-                    if (!pC.HasItem(ItemName.Boots))
+                    foreach (var item in Enum.GetValues(typeof(ItemName)))
                     {
-                        if (!firstI) GUILayout.FlexibleSpace();
+                        if (!pC.HasItem((ItemName)item))
+                        {
+                            if (!firstI) GUILayout.FlexibleSpace();
                             GUILayout.BeginVertical(GUILayout.MaxWidth(100));
                             GUILayout.BeginHorizontal();
-                                GUILayout.FlexibleSpace();
-                                GUILayout.Label("Boots", "GLabelSmall");
-                                GUILayout.FlexibleSpace();
+                            GUILayout.FlexibleSpace();
+                            GUILayout.Label(items[(ItemName)item].name, "GLabelSmall");
+                            GUILayout.FlexibleSpace();
                             GUILayout.EndHorizontal();
                             GUILayout.Space(20);
                             GUILayout.BeginHorizontal();
-                                GUILayout.FlexibleSpace();
-                                if (GUILayout.Button(bootsIcon, GUILayout.MaxWidth(64), GUILayout.MaxHeight(64))) {
-                                    if (pC.HasGold(200))
-                                    {
-                                        //pC.AddSkill(SkillName.Homingball);
-                                    }
-                                    else {
-                                        Debug.Log("Not enough money");
-                                    }
+                            GUILayout.FlexibleSpace();
+                            if (GUILayout.Button(items[(ItemName)item].texture, GUILayout.MaxWidth(64), GUILayout.MaxHeight(64)))
+                            {
+                                if (pC.HasGold(items[(ItemName)item].price))
+                                {
+                                    pC.AddItem((ItemName)item);
                                 }
-                                GUILayout.FlexibleSpace();
-                            GUILayout.EndHorizontal();
-                            GUILayout.Space(20);
-                            GUILayout.BeginHorizontal();
-                                GUILayout.FlexibleSpace();
-                                GUILayout.Label("200g", "GLabelSmall");
-                                GUILayout.FlexibleSpace();
-                            GUILayout.EndHorizontal();
-                        GUILayout.EndVertical();
-                        if (firstI) firstI = false;
-                    }
-                    if (!pC.HasItem(ItemName.Staff))
-                    {
-                        if (!firstI) GUILayout.FlexibleSpace();
-                        GUILayout.BeginVertical(GUILayout.MaxWidth(100));
-                            GUILayout.BeginHorizontal();
-                                GUILayout.FlexibleSpace();
-                                GUILayout.Label("Staff", "GLabelSmall");
-                                GUILayout.FlexibleSpace();
-                            GUILayout.EndHorizontal();
-                            GUILayout.Space(20);
-                            GUILayout.BeginHorizontal();
-                                GUILayout.FlexibleSpace();
-                                if (GUILayout.Button(staffIcon, GUILayout.MaxWidth(64), GUILayout.MaxHeight(64))) {
-                                    if (pC.HasGold(300))
-                                    {
-                                        //pC.AddSkill(SkillName.Teleport);
-                                    }
-                                    else
-                                    {
-                                        Debug.Log("Not enough money");
-                                    }
+                                else
+                                {
+                                    Debug.Log("Not enough money " + items[(ItemName)item].price);
                                 }
-                                GUILayout.FlexibleSpace();
+                            }
+                            GUILayout.FlexibleSpace();
                             GUILayout.EndHorizontal();
                             GUILayout.Space(20);
                             GUILayout.BeginHorizontal();
-                                GUILayout.FlexibleSpace();
-                                GUILayout.Label("300g", "GLabelSmall");
-                                GUILayout.FlexibleSpace();
+                            GUILayout.FlexibleSpace();
+                            GUILayout.Label(items[(ItemName)item].price + "g", "GLabelSmall");
+                            GUILayout.FlexibleSpace();
                             GUILayout.EndHorizontal();
-                        GUILayout.EndVertical();
-                        if (firstI) firstI = false;
+                            GUILayout.EndVertical();
+                            if (firstI) firstI = false;
+                        }
                     }
                     GUILayout.FlexibleSpace();
                 GUILayout.EndHorizontal();
