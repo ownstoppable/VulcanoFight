@@ -10,7 +10,7 @@ public class AI : BaseCharacter {
         characterC = GetComponent<CharacterController>();
         lastLavaDamage = Time.time;
         myTransform = transform;
-        inventory = new Dictionary<ItemName, Item>();
+        _inventory = new Dictionary<ItemName, Item>();
 
         InitializeStats();
 
@@ -52,6 +52,7 @@ public class AI : BaseCharacter {
 
         }
         else {
+            if (!animation.IsPlaying("run")) animation.CrossFade("run");
             myTransform.rotation = Quaternion.Slerp(myTransform.rotation, Quaternion.LookRotation(new Vector3(destinationPosition.x, myTransform.position.y, destinationPosition.z) - myTransform.position), Time.deltaTime * 10);
 
             Vector3 moveDir = myTransform.TransformDirection(Vector3.forward);
@@ -85,7 +86,7 @@ public class AI : BaseCharacter {
 
         if (onLava && Time.time - lastLavaDamage > 1.0f)
         {
-            ReceiveDamage(lavaDamage, 1, "Lava");
+            ReceiveDamage(lavaDamage, 1, "Lava", true);
             lastLavaDamage = Time.time;
         }
         #endregion UncontrolledBehavior
@@ -109,7 +110,7 @@ public class AI : BaseCharacter {
         impact = Vector3.zero;
 
         //Initialize hit
-        hitsReceived = new Dictionary<float, GameObject>();
+        hitsReceived = new List<CharacterHit>();
 
         //Regen
         InvokeRepeating("HPRegeneration", 1, 1);

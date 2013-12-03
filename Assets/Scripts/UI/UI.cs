@@ -10,6 +10,7 @@ public class UI : MonoBehaviour {
     public Texture2D teleportIcon;
     public Texture2D homingBallIcon;
     public Texture2D selfExpIcon;
+    public Texture2D emptyIcon;
     public GUISkin mySkin;
 
 
@@ -80,6 +81,23 @@ public class UI : MonoBehaviour {
             GUI.Box(new Rect(Screen.width - 160, Screen.height * 0.25f + 5 + i * 55 + 5 + 22.5f, 130, 18), "");
 
             GUI.DrawTexture(new Rect(Screen.width - 155, Screen.height * 0.25f + 5 + i * 55 + 5 + 22.5f + 2f, enemies[i].GetComponent<AI>().getPercHP() * 120, 13), hpText);
+        }
+
+        //Inventory UI
+        GUI.Box(new Rect(Screen.width - 141, Screen.height - 99, 121, 79), "");
+        int f = 0;
+        foreach (KeyValuePair<ItemName, Item> item in pC.GetInventory)
+        {
+            int offsetx = f > 2 ? f - 3 : f;
+            int offsety = f > 2 ? 1 : 0;
+            GUI.Label(new Rect(Screen.width - 136 + 5 + offsetx * 37, Screen.height - 99 + 5 + offsety * 37, 32, 32), item.Value.Icon);
+            f++;
+        }
+        for (int i = f; i < 6; i++)
+        {
+            int offsetx = i > 2 ? i - 3 : i;
+            int offsety = i > 2 ? 1 : 0;
+            GUI.Label(new Rect(Screen.width - 136 + 5 + offsetx * 37, Screen.height - 99 + 5 + offsety * 37, 32, 32), emptyIcon);
         }
     }
 

@@ -23,11 +23,25 @@ public class BaseCharacter : MonoBehaviour {
 
     protected Dictionary<SkillName, Skill> skills;
 
-    protected Dictionary<float, GameObject> hitsReceived;
+    protected List<CharacterHit> hitsReceived;
 
     public bool attackPossible;
 
-    protected Dictionary<ItemName, Item> inventory;
+    protected Dictionary<ItemName, Item> _inventory;
+    public Dictionary<ItemName, Item> GetInventory {
+        get { return _inventory; }
+    }
+
+    public class CharacterHit {
+        public float time;
+        public GameObject character;
+
+        public CharacterHit(float t, GameObject go)
+        {
+            time = t;
+            character = go;
+        }
+    }
 
 
     public enum PrizeType { 
@@ -40,7 +54,7 @@ public class BaseCharacter : MonoBehaviour {
     public void AddImpact(Vector3 dir, float force)
     {
         dir.Normalize();
-        if (dir.y < 0) dir.y = -dir.y; // reflect down force on the ground
+        dir.y = 0; // reflect down force on the ground
         impact += dir.normalized * force / characterStats[StatName.Mass].CurValue;
         destinationPosition = myTransform.position;
     }
@@ -57,17 +71,17 @@ public class BaseCharacter : MonoBehaviour {
         return hp.CurValue / hp.TotalValue;
     }
 
-    public void ReceiveDamage(float damage, float knockback, string enemy)
+    public void ReceiveDamage(float damage, float knockback, string enemy, bool trueDamage)
     {
         float testDamage = damage;
         knockback = Mathf.Clamp(knockback + characterStats[StatName.KBResist].CurValue, 0.1f, 1);
-        damage = Mathf.Clamp(damage * characterStats[StatName.Armor].CurValue, 0, Mathf.Infinity);
+        if(!trueDamage)damage = Mathf.Clamp(damage * characterStats[StatName.Armor].CurValue, 0, Mathf.Infinity);
 
         if (characterStats[StatName.HP].CurValue - damage <= 0)
         {
             GameObject killer = LastAssist(5);
             if (killer != null) {
-                ReceiveDamage(testDamage, knockback, killer);
+                ReceiveDamage(testDamage, knockback, killer, trueDamage);
                 return;
             }
         }
@@ -82,10 +96,10 @@ public class BaseCharacter : MonoBehaviour {
             killText.GetComponent<GUIText>().text = gameObject.name + " was killed by " + enemy;
             Destroy(killText, 3);
             List<GameObject> assists = new List<GameObject>();
-            foreach (KeyValuePair<float, GameObject> pair in hitsReceived)
+            for (int i = 0; i < hitsReceived.Count; i++)
             {
-                if (Time.time - pair.Key <= 10 && !assists.Contains(pair.Value))
-                    assists.Add(pair.Value);
+                if (Time.time - hitsReceived[i].time <= 10 && !assists.Contains(hitsReceived[i].character))
+                    assists.Add(hitsReceived[i].character);
             }
 
             if (assists.Count > 0)
@@ -130,15 +144,15 @@ public class BaseCharacter : MonoBehaviour {
         
     }
 
-    public void ReceiveDamage(float damage, float knockback, GameObject enemy)
+    public void ReceiveDamage(float damage, float knockback, GameObject enemy, bool trueDamage)
     {
         knockback = Mathf.Clamp(knockback + characterStats[StatName.KBResist].CurValue, 0.1f, 1);
-        damage = Mathf.Clamp(damage * characterStats[StatName.Armor].CurValue, 0, Mathf.Infinity);
+        if(!trueDamage)damage = Mathf.Clamp(damage * characterStats[StatName.Armor].CurValue, 0, Mathf.Infinity);
 
         characterStats[StatName.Mass].CurValue *= knockback;
         characterStats[StatName.HP].CurValue -= damage;
 
-        hitsReceived.Add(Time.time, enemy);
+        hitsReceived.Add(new CharacterHit(Time.time, enemy));
 
         
 
@@ -150,10 +164,10 @@ public class BaseCharacter : MonoBehaviour {
             Destroy(killText, 3);
 
             List<GameObject> assists = new List<GameObject>();
-            foreach (KeyValuePair<float, GameObject> pair in hitsReceived)
+            for (int i = 0; i < hitsReceived.Count; i++)
             {
-                if (Time.time - pair.Key <= 10 && !assists.Contains(pair.Value))
-                    assists.Add(pair.Value);
+                if (Time.time - hitsReceived[i].time <= 10 && !assists.Contains(hitsReceived[i].character))
+                    assists.Add(hitsReceived[i].character);
             }
             assists.Remove(enemy);
             if (assists.Count > 0) {
@@ -286,10 +300,9 @@ public class BaseCharacter : MonoBehaviour {
         }
     }
 
-    public void AddItem(ItemName item) {
-        Item it = new Item(item);
-        inventory.Add(item, it);
-        foreach (KeyValuePair<StatName,BaseStat> pair in it.GetModifiedStats)
+    public void AddItem(ItemName itName, Item itm) {
+        _inventory.Add(itName, itm);
+        foreach (KeyValuePair<StatName, BaseStat> pair in itm.GetModifiedStats)
         {
             characterStats[pair.Key].ChangeCurTotal(pair.Value.CurValue);
         }
@@ -326,14 +339,14 @@ public class BaseCharacter : MonoBehaviour {
     }
 
     public GameObject LastAssist(float timeSpan) {
-        float lastTime = hitsReceived.Keys.OrderByDescending(x => x).First();
-        if (Time.time - lastTime <= timeSpan) {
-            return hitsReceived[lastTime];
+        CharacterHit lastTime = hitsReceived.OrderByDescending(x => x.time).First();
+        if (Time.time - lastTime.time <= timeSpan) {
+            return lastTime.character;
         }
         else return null;
     }
 
     public bool HasItem(ItemName name) {
-        return inventory.ContainsKey(name);
+        return _inventory.ContainsKey(name);
     }
 }

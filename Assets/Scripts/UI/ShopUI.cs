@@ -175,7 +175,7 @@ public class ShopUI : MonoBehaviour {
                             {
                                 if (pC.HasGold(items[(ItemName)item].price))
                                 {
-                                    pC.AddItem((ItemName)item);
+                                    pC.AddItem((ItemName)item, new Item((ItemName)item,items[(ItemName)item].texture));
                                 }
                                 else
                                 {

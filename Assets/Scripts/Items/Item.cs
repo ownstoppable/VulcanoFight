@@ -1,29 +1,40 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
 public class Item {
-    Dictionary<StatName, BaseStat> modifiedStats;
+    private Dictionary<StatName, BaseStat> _modifiedStats;
     public Dictionary<StatName, BaseStat> GetModifiedStats
     {
-        get { return modifiedStats; }
+        get { return _modifiedStats; }
     }
+
+    private Texture2D _icon;
+    public Texture2D Icon
+    {
+        get { return _icon; }
+        set { _icon = value; }
+    }
+
+    
 
     public Item()
     {
-        modifiedStats = new Dictionary<StatName, BaseStat>();
+        _modifiedStats = new Dictionary<StatName, BaseStat>();
     }
 
-    public Item(ItemName name)
+    public Item(ItemName name, Texture2D ic)
     {
-        modifiedStats = new Dictionary<StatName, BaseStat>();
+        _modifiedStats = new Dictionary<StatName, BaseStat>();
+        _icon = ic;
         switch (name)
         {
             case ItemName.Boots:
-                modifiedStats.Add(StatName.Speed, new BaseStat(5));
+                _modifiedStats.Add(StatName.Speed, new BaseStat(5));
                 break;
             case ItemName.Staff:
-                modifiedStats.Add(StatName.Damage, new BaseStat(50));
+                _modifiedStats.Add(StatName.Damage, new BaseStat(50));
                 break;
             case ItemName.Cloak:
-                modifiedStats.Add(StatName.HPReg, new BaseStat(5));
+                _modifiedStats.Add(StatName.HPReg, new BaseStat(5));
                 break;
             default:
                 break;

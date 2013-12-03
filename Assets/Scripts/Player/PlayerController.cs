@@ -21,7 +21,7 @@ public class PlayerController : BaseCharacter {
         characterC = GetComponent<CharacterController>();
         lastLavaDamage = Time.time;
 
-        inventory = new Dictionary<ItemName, Item>();
+        _inventory = new Dictionary<ItemName, Item>();
         AimUI = transform.FindChild("AimUI").gameObject;
 
         InitializeStats();
@@ -29,8 +29,6 @@ public class PlayerController : BaseCharacter {
         InitializeSkills();
 
         InitRound();
-
-        characterStats[StatName.Armor].ChangeCurTotal(-0.5f);
 	}
  
 	void Update () {
@@ -123,12 +121,14 @@ public class PlayerController : BaseCharacter {
 
             if (destinationDistance > .5f)
             {
+                if (!animation.IsPlaying("run")) animation.CrossFade("run");
                 moveDir = transform.TransformDirection(Vector3.forward);
                 moveDir *= characterStats[StatName.Speed].CurValue;
 
             }
             else {
                 currentStatus = PlayerMode.Idle;
+                if (!animation.IsPlaying("idle")) animation.CrossFade("idle");
             }
         }
         //Apply gravity
@@ -150,7 +150,7 @@ public class PlayerController : BaseCharacter {
         // Lava Damage
         if (onLava && Time.time - lastLavaDamage > 1.0f)
         {
-            ReceiveDamage(lavaDamage, 1, "Lava");
+            ReceiveDamage(lavaDamage, 1, "Lava", true);
             lastLavaDamage = Time.time;
         }
         #endregion UncontrollableBehaviours
@@ -207,7 +207,7 @@ public class PlayerController : BaseCharacter {
         impact = Vector3.zero;
 
         //Initialize hit
-        hitsReceived = new Dictionary<float, GameObject>();
+        hitsReceived = new List<CharacterHit>();
 
         //Regen
         InvokeRepeating("HPRegeneration", 1, 1);
@@ -225,6 +225,7 @@ public class PlayerController : BaseCharacter {
             case SkillName.Fireball:
                 FireballSkill fb = skills[skill] as FireballSkill;
                 fb.LastUsed = Time.time;
+                animation.CrossFade("attack");
                 yield return new WaitForSeconds(fb.CastTime * characterStats[StatName.CSpeed].CurValue);
                 fb.Launch(gameObject, skillDir, characterStats[StatName.KBPower].CurValue, characterStats[StatName.Damage].CurValue);
                 break;

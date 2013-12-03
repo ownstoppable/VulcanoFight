@@ -91,7 +91,7 @@ public class HomingBallController : MonoBehaviour {
                 Vector3 direction = other.transform.position - myTransform.position;
                 BaseCharacter bC = other.GetComponent<BaseCharacter>();
                 bC.AddImpact(direction, force);
-                bC.ReceiveDamage(damage, knockback, owner);
+                bC.ReceiveDamage(damage, knockback, owner, false);
                 owner.GetComponent<BaseCharacter>().HitGold(SkillName.Homingball);
             }
             Destroy(gameObject);

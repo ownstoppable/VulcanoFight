@@ -50,14 +50,14 @@ public class GameManager : MonoBehaviour {
         {
             for (int i = 0; i < gOptions.nEnemies; i++)
             {
-                GameObject bot = Instantiate(enemyPrefab, new Vector3(Random.Range(-20, 21), 1.5f, Random.Range(-20, 21)), Quaternion.identity) as GameObject;
+                GameObject bot = Instantiate(enemyPrefab, new Vector3(Random.Range(-20, 21), 0.5f, Random.Range(-20, 21)), Quaternion.identity) as GameObject;
                 bot.transform.parent = enemiesGroup.transform;
                 bot.name = "Bot " + (i + 1);
                 bot.GetComponent<BaseCharacter>().attackPossible = false;
                 characters.Add(bot.GetComponent<BaseCharacter>());
             }
 
-            GameObject player = Instantiate(playerPrefab, new Vector3(Random.Range(-20, 21), 1.5f, Random.Range(-20, 21)), Quaternion.identity) as GameObject;
+            GameObject player = Instantiate(playerPrefab, new Vector3(Random.Range(-20, 21), 0.5f, Random.Range(-20, 21)), Quaternion.identity) as GameObject;
             player.name = "Player";
             gOptions.playerObj = player;
             DontDestroyOnLoad(player);
@@ -69,7 +69,7 @@ public class GameManager : MonoBehaviour {
             for (int i = 0; i < enemiesGroup.transform.childCount; i++)
             {
                 AI botAI = enemiesGroup.transform.GetChild(i).GetComponent<AI>();
-                botAI.gameObject.transform.position = new Vector3(Random.Range(-20, 21), 1.5f, Random.Range(-20, 21));
+                botAI.gameObject.transform.position = new Vector3(Random.Range(-20, 21), 0.5f, Random.Range(-20, 21));
                 botAI.gameObject.SetActive(true);
                 botAI.InitRound();
                 botAI.attackPossible = false;
@@ -77,7 +77,7 @@ public class GameManager : MonoBehaviour {
             }
 
             PlayerController playerC = GameOptions.Instance.playerObj.GetComponent<PlayerController>();
-            playerC.gameObject.transform.position = new Vector3(Random.Range(-20, 21), 1.5f, Random.Range(-20, 21));
+            playerC.gameObject.transform.position = new Vector3(Random.Range(-20, 21), 0.5f, Random.Range(-20, 21));
             playerC.gameObject.SetActive(true);
             playerC.InitRound();
             playerC.attackPossible = false;
