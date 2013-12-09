@@ -22,6 +22,7 @@ public class AI : BaseCharacter {
 	// Update is called once per frame
 	void Update ()
     {
+        if (IsDead) return;
 
         #region AI
 
@@ -102,6 +103,8 @@ public class AI : BaseCharacter {
 
     public void InitRound()
     {
+        IsDead = false;
+        characterC.enabled = true;
         onLava = false;
         camTransform = Camera.main.transform;
         destinationPosition = myTransform.position;

@@ -6,13 +6,13 @@ using System;
 public class UI : MonoBehaviour {
     public Texture2D hpText;
     private PlayerController pC;
-    public Texture2D fireballIcon;
-    public Texture2D teleportIcon;
-    public Texture2D homingBallIcon;
-    public Texture2D selfExpIcon;
+	public Material fireballMat;
+	public Material selfExplMat;
+	public Material teleportMat;
+	public Material homingBallMat;
     public Texture2D emptyIcon;
+	public Texture2D selectedIcon;
     public GUISkin mySkin;
-
 
 
 	// Use this for initialization
@@ -31,23 +31,53 @@ public class UI : MonoBehaviour {
 
         }
         //Skills
-        if (pC.HasSkill(SkillName.Fireball) && pC.attackPossible && GUI.Button(new Rect(20, Screen.height - 84, 64, 64), fireballIcon))
-        {
-            pC.PrepSkill(SkillName.Fireball);
-        }
-        if (pC.HasSkill(SkillName.SelfExplosion) && pC.attackPossible && GUI.Button(new Rect(20, Screen.height - 158, 64, 64), selfExpIcon))
-        {
-            pC.PrepSkill(SkillName.SelfExplosion);
-        }
-        if (pC.HasSkill(SkillName.Teleport) && pC.attackPossible && GUI.Button(new Rect(20, Screen.height - 232, 64, 64), teleportIcon))
-        {
-            pC.PrepSkill(SkillName.Teleport);
-        }
-        if (pC.HasSkill(SkillName.Homingball) && pC.attackPossible && GUI.Button(new Rect(20, Screen.height - 306, 64, 64), homingBallIcon))
-        {
-            pC.PrepSkill(SkillName.Homingball);
-        }
-
+		if(pC.attackPossible){
+			if (pC.HasSkill(SkillName.Fireball))
+			{
+				float skillCD = 1 - pC.SkillCooldown(SkillName.Fireball);
+				GUI.DrawTexture(new Rect(20, Screen.height - 84, 64, 64), pC.skillBeingCast == SkillName.Fireball ? selectedIcon : emptyIcon);
+				if(Event.current.type.Equals(EventType.Repaint)){
+					fireballMat.SetFloat("_Cutoff", skillCD);
+					fireballMat.SetColor("_Color", skillCD <= 0 ? Color.white : Color.gray);
+				}
+				Graphics.DrawTexture(new Rect(22.4f, Screen.height - 81.6f, 59.2f, 59.2f), fireballMat.GetTexture("_MainTex"), fireballMat);
+				if(GUI.Button(new Rect(20, Screen.height - 84, 64, 64), "", "GButton"))
+					pC.PrepSkill(SkillName.Fireball);
+			}
+			if(pC.HasSkill(SkillName.SelfExplosion)){
+				float skillCD = 1 - pC.SkillCooldown(SkillName.SelfExplosion);
+				GUI.DrawTexture(new Rect(20, Screen.height - 158, 64, 64), pC.skillBeingCast == SkillName.SelfExplosion ? selectedIcon : emptyIcon);
+				if(Event.current.type.Equals(EventType.Repaint)){
+					selfExplMat.SetFloat("_Cutoff", skillCD);
+					selfExplMat.SetColor("_Color", skillCD <= 0 ? Color.white : Color.gray);
+				}
+				Graphics.DrawTexture(new Rect(22.4f, Screen.height - 155.6f, 59.2f, 59.2f), selfExplMat.GetTexture("_MainTex"), selfExplMat);
+				if(GUI.Button(new Rect(20, Screen.height - 158, 64, 64), "", "GButton"))
+					pC.PrepSkill(SkillName.SelfExplosion);
+			}
+			if(pC.HasSkill(SkillName.Teleport)){
+				float skillCD = 1 - pC.SkillCooldown(SkillName.Teleport);
+				GUI.DrawTexture(new Rect(20, Screen.height - 232, 64, 64), pC.skillBeingCast == SkillName.Teleport ? selectedIcon : emptyIcon);
+				if(Event.current.type.Equals(EventType.Repaint)){
+					teleportMat.SetFloat("_Cutoff", skillCD);
+					teleportMat.SetColor("_Color", skillCD <= 0 ? Color.white : Color.gray);
+				}
+				Graphics.DrawTexture(new Rect(22.4f, Screen.height - 229.6f, 59.2f, 59.2f), teleportMat.GetTexture("_MainTex"), teleportMat);
+				if(GUI.Button(new Rect(20, Screen.height - 232, 64, 64), "", "GButton"))
+					pC.PrepSkill(SkillName.Teleport);
+			}
+			if(pC.HasSkill(SkillName.Homingball)){
+				float skillCD = 1 - pC.SkillCooldown(SkillName.Homingball);
+				GUI.DrawTexture(new Rect(20, Screen.height - 306, 64, 64), pC.skillBeingCast == SkillName.Homingball ? selectedIcon : emptyIcon);
+				if(Event.current.type.Equals(EventType.Repaint)){
+					homingBallMat.SetFloat("_Cutoff", skillCD);
+					homingBallMat.SetColor("_Color", skillCD <= 0 ? Color.white : Color.gray);
+				}
+				Graphics.DrawTexture(new Rect(22.4f, Screen.height - 303.6f, 59.2f, 59.2f), homingBallMat.GetTexture("_MainTex"), homingBallMat);
+				if(GUI.Button(new Rect(20, Screen.height - 306, 64, 64), "", "GButton"))
+					pC.PrepSkill(SkillName.Homingball);
+			}
+		}
 
         //Player UI
         GUI.Box(new Rect(20, 20, 200, 90), "");

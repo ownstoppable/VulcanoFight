@@ -27,6 +27,15 @@ public class BaseCharacter : MonoBehaviour {
 
     public bool attackPossible;
 
+    protected enum CharacterMode
+    {
+        Movement,
+        Casting,
+        Idle
+    }
+
+    protected CharacterMode currentStatus;
+
     protected Dictionary<ItemName, Item> _inventory;
     public Dictionary<ItemName, Item> GetInventory {
         get { return _inventory; }
@@ -49,6 +58,15 @@ public class BaseCharacter : MonoBehaviour {
         Assist,
         RoundWin
     }
+
+    private bool _isDead;
+    public bool IsDead
+    {
+        get { return _isDead; }
+        set { _isDead = value; }
+    }
+
+
 
     // call this function to add an impact force:
     public void AddImpact(Vector3 dir, float force)
@@ -123,7 +141,7 @@ public class BaseCharacter : MonoBehaviour {
                 ((PlayerController)this).AimUI.transform.parent = gameObject.transform;
                 Time.timeScale = 4;
             }
-            GoIdle();
+            StartCoroutine(DieAnimation());
 
             List<GameObject> characters = new List<GameObject>(GameManager.Instance.GetAliveCharacters());
             characters.Remove(gameObject);
@@ -136,7 +154,7 @@ public class BaseCharacter : MonoBehaviour {
                 characters[0].GetComponent<BaseCharacter>().GoldPrize(PrizeType.RoundWin);
                 Destroy(victText, 4);
                 if (characters[0].tag == "Player") characters[0].GetComponent<PlayerController>().AimUI.transform.parent = characters[0].transform;
-                characters[0].GetComponent<BaseCharacter>().GoIdle();
+                StartCoroutine(characters[0].GetComponent<BaseCharacter>().WinRound());
                 GameManager.Instance.FinishRoundI();
             }
         }
@@ -193,7 +211,7 @@ public class BaseCharacter : MonoBehaviour {
                 ((PlayerController)this).AimUI.transform.parent = gameObject.transform;
                 Time.timeScale = 4;
             }
-            GoIdle();
+            StartCoroutine(DieAnimation());
 
             List<GameObject> characters = new List<GameObject>(GameManager.Instance.GetAliveCharacters());
             characters.Remove(gameObject);
@@ -207,7 +225,7 @@ public class BaseCharacter : MonoBehaviour {
                 characters[0].GetComponent<BaseCharacter>().GoldPrize(PrizeType.RoundWin);
                 Destroy(victText, 4);
                 if (characters[0].tag == "Player") characters[0].GetComponent<PlayerController>().AimUI.transform.parent = characters[0].transform;
-                characters[0].GetComponent<BaseCharacter>().GoIdle();
+                StartCoroutine(characters[0].GetComponent<BaseCharacter>().WinRound());
                 GameManager.Instance.FinishRoundI();
             }
         }
@@ -272,6 +290,29 @@ public class BaseCharacter : MonoBehaviour {
 
     public void GoIdle() {
         CancelInvoke();
+        attackPossible = false;
+        _isDead = true;
+        gameObject.SetActive(false);
+    }
+
+    private IEnumerator DieAnimation() {
+        CancelInvoke();
+        attackPossible = false;
+        _isDead = true;
+        characterC.enabled = false;
+        animation.Play("die");
+        yield return new WaitForSeconds(animation["die"].length);
+        gameObject.SetActive(false);
+    }
+
+    public IEnumerator WinRound() {
+        CancelInvoke();
+        attackPossible = false;
+        _isDead = true;
+        characterC.enabled = false;
+        animation["dance"].speed = 3;
+        animation.Play("dance");
+        yield return new WaitForSeconds(2);
         gameObject.SetActive(false);
     }
 
@@ -293,7 +334,7 @@ public class BaseCharacter : MonoBehaviour {
                 skills.Add(skill, new TeleportSkill(10, 10));                
                 break;
             case SkillName.Homingball:
-                skills.Add(skill, new HomingBallSkill(1, 200, 10, 5, 10, 0.5f));
+                skills.Add(skill, new HomingBallSkill(8, 200, 10, 5, 10, 0.5f));
                 break;
             default:
                 break;
@@ -349,4 +390,8 @@ public class BaseCharacter : MonoBehaviour {
     public bool HasItem(ItemName name) {
         return _inventory.ContainsKey(name);
     }
+
+	public float SkillCooldown(SkillName name){
+		return Mathf.Clamp01((Time.time - skills[name].LastUsed)/(skills[name].getCooldown * characterStats[StatName.CDR].CurValue));
+	}
 }

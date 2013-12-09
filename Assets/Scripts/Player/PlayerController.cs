@@ -7,14 +7,6 @@ public class PlayerController : BaseCharacter {
     private float destinationDistance;
  
     public GameObject AimUI;
-
-    public enum PlayerMode { 
-        Movement,
-        Casting,
-        Idle
-    }
-
-    public PlayerMode currentStatus;
  
 	void Start () {
 		myTransform = transform;
@@ -32,6 +24,7 @@ public class PlayerController : BaseCharacter {
 	}
  
 	void Update () {
+        if (IsDead) return;
 
         #region SkillInput
         //Skills
@@ -71,17 +64,17 @@ public class PlayerController : BaseCharacter {
 			if (playerPlane.Raycast(ray, out hitdist)) {
                 switch (currentStatus)
                 {
-                    case PlayerMode.Movement:
-                    case PlayerMode.Idle:
+                    case CharacterMode.Movement:
+                    case CharacterMode.Idle:
                         if (skillBeingCast == SkillName.None)
                         {
                             destinationPosition = ray.GetPoint(hitdist);
                             Quaternion targetRotation = Quaternion.LookRotation(destinationPosition - transform.position);
                             myTransform.rotation = targetRotation;
-                            currentStatus = PlayerMode.Movement;
+                            currentStatus = CharacterMode.Movement;
                         }
                         break;
-                    case PlayerMode.Casting:
+                    case CharacterMode.Casting:
                         break;
                     default:
                         break;
@@ -93,7 +86,7 @@ public class PlayerController : BaseCharacter {
                     AimUI.SetActive(false);
                     StartCoroutine(LaunchSkill(skillBeingCast, ray.GetPoint(hitdist)));
                     skillBeingCast = SkillName.None;
-                    currentStatus = PlayerMode.Casting;
+                    currentStatus = CharacterMode.Casting;
                 }
 			}
 		}
@@ -114,7 +107,7 @@ public class PlayerController : BaseCharacter {
          */
 
         Vector3 moveDir = Vector3.zero;
-        if (currentStatus == PlayerMode.Movement)
+        if (currentStatus == CharacterMode.Movement)
         {
             // keep track of the distance between this gameObject and destinationPosition
             destinationDistance = Vector3.Distance(destinationPosition, myTransform.position);
@@ -127,10 +120,11 @@ public class PlayerController : BaseCharacter {
 
             }
             else {
-                currentStatus = PlayerMode.Idle;
+                currentStatus = CharacterMode.Idle;
                 if (!animation.IsPlaying("idle")) animation.CrossFade("idle");
             }
         }
+        else if (!animation.isPlaying) animation.CrossFade("idle");
         //Apply gravity
         moveDir = new Vector3(moveDir.x, -9.8f, moveDir.z);
         characterC.Move(moveDir* Time.deltaTime);
@@ -182,7 +176,7 @@ public class PlayerController : BaseCharacter {
                     {
                         characterStats[StatName.HP].CurValue -= se.selfDamage;
                         StartCoroutine(LaunchSkill(SkillName.SelfExplosion, Vector3.zero));
-                        currentStatus = PlayerMode.Casting;
+                        currentStatus = CharacterMode.Casting;
                     }
                     else {
                         Debug.Log("Not enough HP for SelfExplosion");
@@ -200,6 +194,8 @@ public class PlayerController : BaseCharacter {
     public void InitRound()
     {
         onLava = false;
+        IsDead = false;
+        characterC.enabled = true;
         camTransform = Camera.main.transform;
         destinationPosition = myTransform.position;
         characterStats[StatName.HP].ResetCurValue();
@@ -212,7 +208,7 @@ public class PlayerController : BaseCharacter {
         //Regen
         InvokeRepeating("HPRegeneration", 1, 1);
 
-        currentStatus = PlayerMode.Idle;
+        currentStatus = CharacterMode.Idle;
         skillBeingCast = SkillName.None;
 
         AimUI.transform.parent = null;
@@ -238,12 +234,14 @@ public class PlayerController : BaseCharacter {
             case SkillName.Homingball:
                 HomingBallSkill hb = skills[skill] as HomingBallSkill;
                 hb.LastUsed = Time.time;
+                animation.CrossFade("attack");
                 yield return new WaitForSeconds(hb.CastTime * characterStats[StatName.CSpeed].CurValue);
                 hb.Launch(gameObject, skillDir, characterStats[StatName.KBPower].CurValue, characterStats[StatName.Damage].CurValue);
                 break;
             case SkillName.SelfExplosion:
                 SelfExplosionSkill se = skills[skill] as SelfExplosionSkill;
                 se.LastUsed = Time.time;
+                animation.CrossFade("gethit");
                 yield return new WaitForSeconds(se.CastTime * characterStats[StatName.CSpeed].CurValue);
                 se.Launch(gameObject, characterStats[StatName.KBPower].CurValue, characterStats[StatName.Damage].CurValue);
                 break;
@@ -252,7 +250,7 @@ public class PlayerController : BaseCharacter {
             default:
                 break;
         }
-        currentStatus = PlayerMode.Idle;
+        currentStatus = CharacterMode.Idle;
     }
 
     [ContextMenu("TestSkills")]

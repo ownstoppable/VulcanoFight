@@ -16,7 +16,7 @@ public class SelfExplosionController : MonoBehaviour {
         myTransform = transform;
         myTransform.parent = GameObject.FindGameObjectWithTag("SkillsGroup").transform;
         GetComponent<SphereCollider>().radius = radius;
-        Destroy(gameObject, Time.deltaTime * 20);
+        Destroy(gameObject, myTransform.FindChild("Particles").GetComponent<ParticleSystem>().duration);
     }
 
     void OnTriggerEnter(Collider other)

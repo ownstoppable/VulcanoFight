@@ -112,7 +112,7 @@ public class MainMenu : MonoBehaviour {
                         }
                         GUILayout.EndHorizontal();
                     GUILayout.EndHorizontal();
-                    GUILayout.Space(30);
+					GUILayout.FlexibleSpace();
                     GUILayout.BeginHorizontal();
                         GUILayout.FlexibleSpace();
                         if (GUILayout.Button("Back", "GButton")) {
