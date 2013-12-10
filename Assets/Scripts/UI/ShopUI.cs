@@ -14,9 +14,17 @@ public class ShopUI : MonoBehaviour {
     public itemUI staffUI;
     public itemUI bootsUI;
     public itemUI cloakUI;
+    public itemUI vitballUI;
+    public itemUI apofmagicUI;
+    public itemUI stpendUI;
+    public itemUI shcunUI;
+    public itemUI evilapUI;
+    public itemUI mplatemUI;
 
     private Dictionary<SkillName, itemUI> skills;
     private Dictionary<ItemName, itemUI> items;
+
+    private Vector2 itemScroll = Vector2.zero;
 
     private enum MenuType
     {
@@ -45,9 +53,15 @@ public class ShopUI : MonoBehaviour {
         skills.Add(SkillName.Teleport, teleportUI);
 
         items = new Dictionary<ItemName, itemUI>();
-        items.Add(ItemName.Staff, staffUI);
-        items.Add(ItemName.Boots, bootsUI);
-        items.Add(ItemName.Cloak, cloakUI);
+        items.Add(ItemName.CarversStaff, staffUI);
+        items.Add(ItemName.HauntersBoots, bootsUI);
+        items.Add(ItemName.DivineCloak, cloakUI);
+        items.Add(ItemName.VitalityBall, vitballUI);
+        items.Add(ItemName.ApparatusofMagic, apofmagicUI);
+        items.Add(ItemName.SturdyPendant, stpendUI);
+        items.Add(ItemName.ShieldofCunning, shcunUI);
+        items.Add(ItemName.EvilStrongApparatus, evilapUI);
+        items.Add(ItemName.MeteoricPlateMail, mplatemUI);
     }
 
     void OnGUI() {
@@ -153,8 +167,9 @@ public class ShopUI : MonoBehaviour {
                 GUILayout.EndArea();
                 break;
             case MenuType.Items:
-                bool firstI = true;
-                GUILayout.BeginArea(new Rect(Screen.width * 0.25f, Screen.height * 0.4f, Screen.width * 0.5f, Screen.height * 0.4f));
+                #region old_ui
+                /*bool firstI = true;
+                GUILayout.BeginArea(new Rect(Screen.width * 0.1f, Screen.height * 0.4f, Screen.width * 0.8f, Screen.height * 0.4f));
                 GUILayout.BeginHorizontal();
                     GUILayout.FlexibleSpace();
                     foreach (var item in Enum.GetValues(typeof(ItemName)))
@@ -175,7 +190,7 @@ public class ShopUI : MonoBehaviour {
                             {
                                 if (pC.HasGold(items[(ItemName)item].price))
                                 {
-                                    pC.AddItem((ItemName)item, new Item((ItemName)item,items[(ItemName)item].texture));
+									pC.AddItem((ItemName)item, new Item((ItemName)item,items[(ItemName)item].texture, items[(ItemName)item].name));
                                 }
                                 else
                                 {
@@ -201,7 +216,39 @@ public class ShopUI : MonoBehaviour {
                 {
                     currentMenu = MenuType.MainMenu;
                 }
-                GUILayout.EndArea();
+                GUILayout.EndArea();*/
+                #endregion old_ui
+                GUI.BeginGroup(new Rect(Screen.width * 0.2f, Screen.height * 0.3f, Screen.width * 0.6f, Screen.height * 0.4f));
+                GUI.Box(new Rect(0, 0, Screen.width * 0.4f, Screen.height * 0.4f), "");
+                int maxIcon = (int)Math.Floor((Screen.width * 0.4f - 30) / 74);
+                itemScroll = GUI.BeginScrollView(new Rect(0, 0, Screen.width * 0.4f, Screen.height * 0.4f), itemScroll, new Rect(0, 0, Screen.width * 0.4f - 20, 20 + Mathf.Ceil((Enum.GetValues(typeof(ItemName)).Length - pC.GetInventory.Count) / (float)maxIcon) * 74));
+                int itIndex = 0;
+                foreach (var item in Enum.GetValues(typeof(ItemName)))
+                {
+                    if (!pC.HasItem((ItemName)item))
+                    {
+                        if (GUI.Button(new Rect(10 + (itIndex - Mathf.Ceil(itIndex / maxIcon) * maxIcon) * 74, 10 + Mathf.Ceil(itIndex / maxIcon) * 74, 64, 64), items[(ItemName)item].texture, "GButton"))
+                        {
+                            if (pC.HasGold(items[(ItemName)item].price))
+                            {
+                                pC.AddItem((ItemName)item, new Item((ItemName)item, items[(ItemName)item].texture, items[(ItemName)item].name));
+                            }
+                            else
+                            {
+                                Debug.Log("Not enough money " + items[(ItemName)item].price);
+                            }
+                        }
+                        itIndex++;
+                    }
+                    
+                }
+                GUI.EndScrollView();
+                GUI.Box(new Rect(Screen.width * 0.4f, 0, Screen.width * 0.2f, Screen.height * 0.4f), "");
+                GUI.EndGroup();
+                if (GUI.Button(new Rect(Screen.width * 0.5f - 40, Screen.height * 0.7f  + 20, 80, 30), "Back", "GButton"))
+                {
+                    currentMenu = MenuType.MainMenu;
+                }
                 break;
             default:
                 break;

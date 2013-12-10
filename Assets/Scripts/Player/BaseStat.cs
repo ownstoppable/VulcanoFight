@@ -21,8 +21,6 @@
     {
         get {
             if (_curValue > TotalValue) _curValue = TotalValue;
-            if (_curValue < 0) _curValue = 0;
-
             return _curValue; 
         }
         set { _curValue = value; }

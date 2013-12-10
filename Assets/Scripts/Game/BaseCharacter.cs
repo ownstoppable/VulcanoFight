@@ -327,6 +327,10 @@ public class BaseCharacter : MonoBehaviour {
         return skills.ContainsKey(skill);
     }
 
+    public int SkillCount() {
+        return skills.Count;
+    }
+
     public void AddSkill(SkillName skill) {
         switch (skill)
         {
@@ -370,7 +374,7 @@ public class BaseCharacter : MonoBehaviour {
         characterStats.Add(StatName.KBPower, new BaseStat());
         characterStats.Add(StatName.KBResist, new BaseStat());
         characterStats.Add(StatName.Speed, new BaseStat(5));
-        characterStats.Add(StatName.Gold, new BaseStat());
+        characterStats.Add(StatName.Gold, new BaseStat(500));
         characterStats.Add(StatName.Mass, new BaseStat(3));
         characterStats.Add(StatName.Kills, new BaseStat());
     }
