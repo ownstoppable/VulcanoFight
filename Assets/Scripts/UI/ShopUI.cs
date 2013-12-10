@@ -25,6 +25,10 @@ public class ShopUI : MonoBehaviour {
     private Dictionary<ItemName, itemUI> items;
 
     private Vector2 itemScroll = Vector2.zero;
+    private int selectedItem = -1;
+
+    private Vector2 skillScroll = Vector2.zero;
+    private int selectedSkill = -1;
 
     private enum MenuType
     {
@@ -41,6 +45,7 @@ public class ShopUI : MonoBehaviour {
         public string name;
         public Texture2D texture;
         public int price;
+        public string details;
     }
 
     void Start() {
@@ -116,7 +121,8 @@ public class ShopUI : MonoBehaviour {
                 GUILayout.EndArea();
                 break;
             case MenuType.NewSkills:
-                bool first = true;
+                #region old_ui
+                /*bool first = true;
                 GUILayout.BeginArea(new Rect(Screen.width * 0.25f, Screen.height * 0.4f, Screen.width * 0.5f, Screen.height * 0.4f));
                 GUILayout.BeginHorizontal();
                     GUILayout.FlexibleSpace();
@@ -164,60 +170,53 @@ public class ShopUI : MonoBehaviour {
                 {
                     currentMenu = MenuType.MainMenu;
                 }
-                GUILayout.EndArea();
-                break;
-            case MenuType.Items:
-                #region old_ui
-                /*bool firstI = true;
-                GUILayout.BeginArea(new Rect(Screen.width * 0.1f, Screen.height * 0.4f, Screen.width * 0.8f, Screen.height * 0.4f));
-                GUILayout.BeginHorizontal();
-                    GUILayout.FlexibleSpace();
-                    foreach (var item in Enum.GetValues(typeof(ItemName)))
+                GUILayout.EndArea();*/
+                #endregion old_ui
+                GUI.BeginGroup(new Rect(Screen.width * 0.2f, Screen.height * 0.3f, Screen.width * 0.6f, Screen.height * 0.4f));
+                GUI.Box(new Rect(0, 0, Screen.width * 0.4f, Screen.height * 0.4f), "");
+                int maxSkillIcon = (int)Math.Floor((Screen.width * 0.4f - 30) / 74);
+                skillScroll = GUI.BeginScrollView(new Rect(0, 0, Screen.width * 0.4f, Screen.height * 0.4f), skillScroll, new Rect(0, 0, Screen.width * 0.4f - 20, 20 + Mathf.Ceil(((Enum.GetValues(typeof(SkillName)).Length - 1) - pC.SkillCount()) / (float)maxSkillIcon) * 74));
+                int sklIndex = 0;
+                foreach (var item in Enum.GetValues(typeof(SkillName)))
+                {
+                    if ((SkillName)item != SkillName.None && !pC.HasSkill((SkillName)item))
                     {
-                        if (!pC.HasItem((ItemName)item))
+                        if (GUI.Button(new Rect(10 + (sklIndex - Mathf.Ceil(sklIndex / maxSkillIcon) * maxSkillIcon) * 74, 10 + Mathf.Ceil(sklIndex / maxSkillIcon) * 74, 64, 64), skills[(SkillName)item].texture, "GButton"))
                         {
-                            if (!firstI) GUILayout.FlexibleSpace();
-                            GUILayout.BeginVertical(GUILayout.MaxWidth(100));
-                            GUILayout.BeginHorizontal();
-                            GUILayout.FlexibleSpace();
-                            GUILayout.Label(items[(ItemName)item].name, "GLabelSmall");
-                            GUILayout.FlexibleSpace();
-                            GUILayout.EndHorizontal();
-                            GUILayout.Space(20);
-                            GUILayout.BeginHorizontal();
-                            GUILayout.FlexibleSpace();
-                            if (GUILayout.Button(items[(ItemName)item].texture, GUILayout.MaxWidth(64), GUILayout.MaxHeight(64)))
+                            selectedSkill = (int)item;
+                        }
+                        sklIndex++;
+                    }
+                    
+                }
+                GUI.EndScrollView();
+                GUI.Box(new Rect(Screen.width * 0.4f, 0, Screen.width * 0.2f, Screen.height * 0.4f), "");
+                    GUI.BeginGroup(new Rect(Screen.width * 0.4f, 0, Screen.width * 0.2f, Screen.height * 0.4f));
+                    if (selectedSkill != -1)
+                    {
+                        GUI.Label(new Rect(10, 10, 100, 30), skills[(SkillName)selectedSkill].name, "GLabelSmall");
+                        GUI.TextArea(new Rect(10, 50, Screen.width * 0.2f - 20, Screen.height * 0.25f), skills[(SkillName)selectedSkill].details, "GTextArea");
+                        GUI.Label(new Rect(10, Screen.height * 0.4f - 40, 100, 30), skills[(SkillName)selectedSkill].price + "g", "GLabelSmall");
+                        if (GUI.Button(new Rect(Screen.width * 0.2f - 50, Screen.height * 0.4f - 40, 50, 30), "Buy", "GLabelSmall")) {
+                            if (pC.HasGold(skills[(SkillName)selectedSkill].price))
                             {
-                                if (pC.HasGold(items[(ItemName)item].price))
-                                {
-									pC.AddItem((ItemName)item, new Item((ItemName)item,items[(ItemName)item].texture, items[(ItemName)item].name));
-                                }
-                                else
-                                {
-                                    Debug.Log("Not enough money " + items[(ItemName)item].price);
-                                }
+                                pC.AddSkill((SkillName)selectedSkill);
+                                selectedSkill = -1;
                             }
-                            GUILayout.FlexibleSpace();
-                            GUILayout.EndHorizontal();
-                            GUILayout.Space(20);
-                            GUILayout.BeginHorizontal();
-                            GUILayout.FlexibleSpace();
-                            GUILayout.Label(items[(ItemName)item].price + "g", "GLabelSmall");
-                            GUILayout.FlexibleSpace();
-                            GUILayout.EndHorizontal();
-                            GUILayout.EndVertical();
-                            if (firstI) firstI = false;
+                            else
+                            {
+                                Debug.Log("Not enough money " + skills[(SkillName)selectedSkill].price);
+                            }
                         }
                     }
-                    GUILayout.FlexibleSpace();
-                GUILayout.EndHorizontal();
-                GUILayout.FlexibleSpace();
-                if (GUILayout.Button("Back", "GButton"))
+                    GUI.EndGroup();
+                GUI.EndGroup();
+                if (GUI.Button(new Rect(Screen.width * 0.5f - 40, Screen.height * 0.7f  + 20, 80, 30), "Back", "GButton"))
                 {
                     currentMenu = MenuType.MainMenu;
                 }
-                GUILayout.EndArea();*/
-                #endregion old_ui
+                break;
+            case MenuType.Items:
                 GUI.BeginGroup(new Rect(Screen.width * 0.2f, Screen.height * 0.3f, Screen.width * 0.6f, Screen.height * 0.4f));
                 GUI.Box(new Rect(0, 0, Screen.width * 0.4f, Screen.height * 0.4f), "");
                 int maxIcon = (int)Math.Floor((Screen.width * 0.4f - 30) / 74);
@@ -229,14 +228,7 @@ public class ShopUI : MonoBehaviour {
                     {
                         if (GUI.Button(new Rect(10 + (itIndex - Mathf.Ceil(itIndex / maxIcon) * maxIcon) * 74, 10 + Mathf.Ceil(itIndex / maxIcon) * 74, 64, 64), items[(ItemName)item].texture, "GButton"))
                         {
-                            if (pC.HasGold(items[(ItemName)item].price))
-                            {
-                                pC.AddItem((ItemName)item, new Item((ItemName)item, items[(ItemName)item].texture, items[(ItemName)item].name));
-                            }
-                            else
-                            {
-                                Debug.Log("Not enough money " + items[(ItemName)item].price);
-                            }
+                            selectedItem = (int)item;
                         }
                         itIndex++;
                     }
@@ -244,6 +236,24 @@ public class ShopUI : MonoBehaviour {
                 }
                 GUI.EndScrollView();
                 GUI.Box(new Rect(Screen.width * 0.4f, 0, Screen.width * 0.2f, Screen.height * 0.4f), "");
+                    GUI.BeginGroup(new Rect(Screen.width * 0.4f, 0, Screen.width * 0.2f, Screen.height * 0.4f));
+                    if (selectedItem != -1) {
+                        GUI.Label(new Rect(10, 10, 100, 30), items[(ItemName)selectedItem].name, "GLabelSmall");
+                        GUI.TextArea(new Rect(10, 50, Screen.width * 0.2f - 20, Screen.height * 0.25f), items[(ItemName)selectedItem].details, "GTextArea");
+                        GUI.Label(new Rect(10, Screen.height * 0.4f - 40, 100, 30), items[(ItemName)selectedItem].price + "g", "GLabelSmall");
+                        if (GUI.Button(new Rect(Screen.width * 0.2f - 50, Screen.height * 0.4f - 40, 50, 30), "Buy", "GLabelSmall")) {
+                            if (pC.HasGold(items[(ItemName)selectedItem].price))
+                            {
+                                pC.AddItem((ItemName)selectedItem, new Item((ItemName)selectedItem, items[(ItemName)selectedItem].texture, items[(ItemName)selectedItem].name));
+                                selectedItem = -1;
+                            }
+                            else
+                            {
+                                Debug.Log("Not enough money " + items[(ItemName)selectedItem].price);
+                            }
+                        }
+                    }
+                    GUI.EndGroup();
                 GUI.EndGroup();
                 if (GUI.Button(new Rect(Screen.width * 0.5f - 40, Screen.height * 0.7f  + 20, 80, 30), "Back", "GButton"))
                 {

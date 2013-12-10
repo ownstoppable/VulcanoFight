@@ -17,7 +17,8 @@
 	3.1 - Platform redesign
 	3.2 - Lava redesign
 	3.3 - Aim texture
-	3.4 - Change design on shop menu
+	(Done)3.4 - Change design on item shop menu
+	(Done)3.5 - Change design on skill shop menu
 	
 4- AI
 	4.1 - Rework skill and movement algorithms
