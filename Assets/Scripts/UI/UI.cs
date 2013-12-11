@@ -10,6 +10,7 @@ public class UI : MonoBehaviour {
 	public Material selfExplMat;
 	public Material teleportMat;
 	public Material homingBallMat;
+    public Material metBlastMat;
     public Texture2D emptyIcon;
 	public Texture2D selectedIcon;
     public GUISkin mySkin;
@@ -77,6 +78,19 @@ public class UI : MonoBehaviour {
 				if(GUI.Button(new Rect(20, Screen.height - 306, 64, 64), "", "GButton"))
 					pC.PrepSkill(SkillName.Homingball);
 			}
+            if (pC.HasSkill(SkillName.MeteorBlast))
+            {
+                float skillCD = 1 - pC.SkillCooldown(SkillName.MeteorBlast);
+                GUI.DrawTexture(new Rect(20, Screen.height - 380, 64, 64), pC.skillBeingCast == SkillName.MeteorBlast ? selectedIcon : emptyIcon);
+                if (Event.current.type.Equals(EventType.Repaint))
+                {
+                    metBlastMat.SetFloat("_Cutoff", skillCD);
+                    metBlastMat.SetColor("_Color", skillCD <= 0 ? Color.white : Color.gray);
+                }
+                Graphics.DrawTexture(new Rect(22.4f, Screen.height - 377.6f, 59.2f, 59.2f), metBlastMat.GetTexture("_MainTex"), metBlastMat);
+                if (GUI.Button(new Rect(20, Screen.height - 380, 64, 64), "", "GButton"))
+                    pC.PrepSkill(SkillName.MeteorBlast);
+            }
 		}
 
         //Player UI

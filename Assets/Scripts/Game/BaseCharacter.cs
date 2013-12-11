@@ -266,6 +266,9 @@ public class BaseCharacter : MonoBehaviour {
             case SkillName.SelfExplosion:
                 characterStats[StatName.Gold].ChangeCurTotal(10);
                 break;
+            case SkillName.MeteorBlast:
+                characterStats[StatName.Gold].ChangeCurTotal(30);
+                break;
             default:
                 break;
         }
@@ -339,6 +342,9 @@ public class BaseCharacter : MonoBehaviour {
                 break;
             case SkillName.Homingball:
                 skills.Add(skill, new HomingBallSkill(8, 200, 10, 5, 10, 0.5f));
+                break;
+            case SkillName.MeteorBlast:
+                skills.Add(skill, new MeteorBlastSkill(8, 300, 20, 0.5f));
                 break;
             default:
                 break;

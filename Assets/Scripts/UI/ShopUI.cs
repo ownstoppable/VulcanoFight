@@ -11,6 +11,8 @@ public class ShopUI : MonoBehaviour {
     private PlayerController pC;
     public itemUI homingBallUI;
     public itemUI teleportUI;
+    public itemUI meteorBallUI;
+
     public itemUI staffUI;
     public itemUI bootsUI;
     public itemUI cloakUI;
@@ -56,6 +58,7 @@ public class ShopUI : MonoBehaviour {
         skills = new Dictionary<SkillName, itemUI>();
         skills.Add(SkillName.Homingball, homingBallUI);
         skills.Add(SkillName.Teleport, teleportUI);
+        skills.Add(SkillName.MeteorBlast, meteorBallUI);
 
         items = new Dictionary<ItemName, itemUI>();
         items.Add(ItemName.CarversStaff, staffUI);

@@ -44,6 +44,10 @@ public class PlayerController : BaseCharacter {
         {
             PrepSkill(SkillName.Homingball);
         }
+        if (HasSkill(SkillName.MeteorBlast) && attackPossible && Input.GetButtonDown("Skill 5"))
+        {
+            PrepSkill(SkillName.MeteorBlast);
+        }
 
 
         if (skillBeingCast != SkillName.None && (Input.GetKeyDown(KeyCode.Escape) || Input.GetMouseButtonDown(1)))
@@ -157,6 +161,7 @@ public class PlayerController : BaseCharacter {
             case SkillName.Fireball:
             case SkillName.Teleport:
             case SkillName.Homingball:
+            case SkillName.MeteorBlast:
                 Skill skll = skills[skill];
                 if (Time.time - skll.LastUsed > skll.getCooldown * characterStats[StatName.CDR].CurValue)
                 {
@@ -245,17 +250,18 @@ public class PlayerController : BaseCharacter {
                 yield return new WaitForSeconds(se.CastTime * characterStats[StatName.CSpeed].CurValue);
                 se.Launch(gameObject, characterStats[StatName.KBPower].CurValue, characterStats[StatName.Damage].CurValue);
                 break;
+            case SkillName.MeteorBlast:
+                MeteorBlastSkill mb = skills[skill] as MeteorBlastSkill;
+                mb.LastUsed = Time.time;
+                animation.CrossFade("attack");
+                yield return new WaitForSeconds(mb.CastTime * characterStats[StatName.CSpeed].CurValue);
+                mb.Launch(gameObject, skillDir, characterStats[StatName.KBPower].CurValue, characterStats[StatName.Damage].CurValue);
+                break;
             case SkillName.None:
                 break;
             default:
                 break;
         }
         currentStatus = CharacterMode.Idle;
-    }
-
-    [ContextMenu("TestSkills")]
-    public void TestFunc() {
-        Debug.Log("skill count: " + skills.Count);
-        Debug.Log("has homing ball: " + skills.ContainsKey(SkillName.Homingball));
     }
 }

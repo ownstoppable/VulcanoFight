@@ -35,5 +35,6 @@ public enum SkillName
     Teleport,
     Homingball,
     SelfExplosion,
+    MeteorBlast,
     None
 }

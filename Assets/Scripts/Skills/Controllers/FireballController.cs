@@ -26,7 +26,7 @@ public class FireballController : MonoBehaviour {
     {
         if (other.gameObject != owner)
         {
-            if (other.tag != "Skillshot" && other.tag != "TerrainLimit")
+            if (other.tag == "Enemy" || other.tag == "Player")
             {
 
                 Vector3 direction = other.transform.position - myTransform.position;
@@ -35,7 +35,7 @@ public class FireballController : MonoBehaviour {
                 bC.ReceiveDamage(damage, knockback, owner, false);
                 owner.GetComponent<BaseCharacter>().HitGold(SkillName.Fireball);
             }
-            Destroy(gameObject);
+            if(other.tag != "InvisibleSkill")Destroy(gameObject);
         }
     }
 
