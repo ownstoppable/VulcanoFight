@@ -16,14 +16,26 @@ public class UI : MonoBehaviour {
 	public Texture2D selectedIcon;
     public GUISkin mySkin;
 
+    private string lastTooltip = "";
+
+    private Dictionary<SkillName, Material> skillMaterials;
 
 	// Use this for initialization
 	void Start () {
         pC = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerController>();
+        skillMaterials = new Dictionary<SkillName, Material>();
+        skillMaterials.Add(SkillName.Fireball, fireballMat);
+        skillMaterials.Add(SkillName.SelfExplosion, selfExplMat);
+        skillMaterials.Add(SkillName.Teleport, teleportMat);
+        skillMaterials.Add(SkillName.Homingball, homingBallMat);
+        skillMaterials.Add(SkillName.MeteorBlast, metBlastMat);
+        skillMaterials.Add(SkillName.EtherealWalk, ethWalkMat);
 	}
 
     void OnGUI() {
         GUI.skin = mySkin;
+
+        if (lastTooltip != "") GUI.Label(new Rect(Screen.width * 0.5f - 50, 20, 100, 30), lastTooltip);
 
         //Game Time
         if (GameManager.Instance.GetTimePassed() != -1)
@@ -34,76 +46,21 @@ public class UI : MonoBehaviour {
         }
         //Skills
 		if(pC.attackPossible){
-			if (pC.HasSkill(SkillName.Fireball))
-			{
-				float skillCD = 1 - pC.SkillCooldown(SkillName.Fireball);
-				GUI.DrawTexture(new Rect(20, Screen.height - 84, 64, 64), pC.skillBeingCast == SkillName.Fireball ? selectedIcon : emptyIcon);
-				if(Event.current.type.Equals(EventType.Repaint)){
-					fireballMat.SetFloat("_Cutoff", skillCD);
-					fireballMat.SetColor("_Color", skillCD <= 0 ? Color.white : Color.gray);
-				}
-				Graphics.DrawTexture(new Rect(22.4f, Screen.height - 81.6f, 59.2f, 59.2f), fireballMat.GetTexture("_MainTex"), fireballMat);
-				if(GUI.Button(new Rect(20, Screen.height - 84, 64, 64), "", "GButton"))
-					pC.PrepSkill(SkillName.Fireball);
-			}
-			if(pC.HasSkill(SkillName.SelfExplosion)){
-				float skillCD = 1 - pC.SkillCooldown(SkillName.SelfExplosion);
-				GUI.DrawTexture(new Rect(20, Screen.height - 158, 64, 64), pC.skillBeingCast == SkillName.SelfExplosion ? selectedIcon : emptyIcon);
-				if(Event.current.type.Equals(EventType.Repaint)){
-					selfExplMat.SetFloat("_Cutoff", skillCD);
-					selfExplMat.SetColor("_Color", skillCD <= 0 ? Color.white : Color.gray);
-				}
-				Graphics.DrawTexture(new Rect(22.4f, Screen.height - 155.6f, 59.2f, 59.2f), selfExplMat.GetTexture("_MainTex"), selfExplMat);
-				if(GUI.Button(new Rect(20, Screen.height - 158, 64, 64), "", "GButton"))
-					pC.PrepSkill(SkillName.SelfExplosion);
-			}
-			if(pC.HasSkill(SkillName.Teleport)){
-				float skillCD = 1 - pC.SkillCooldown(SkillName.Teleport);
-				GUI.DrawTexture(new Rect(20, Screen.height - 232, 64, 64), pC.skillBeingCast == SkillName.Teleport ? selectedIcon : emptyIcon);
-				if(Event.current.type.Equals(EventType.Repaint)){
-					teleportMat.SetFloat("_Cutoff", skillCD);
-					teleportMat.SetColor("_Color", skillCD <= 0 ? Color.white : Color.gray);
-				}
-				Graphics.DrawTexture(new Rect(22.4f, Screen.height - 229.6f, 59.2f, 59.2f), teleportMat.GetTexture("_MainTex"), teleportMat);
-				if(GUI.Button(new Rect(20, Screen.height - 232, 64, 64), "", "GButton"))
-					pC.PrepSkill(SkillName.Teleport);
-			}
-			if(pC.HasSkill(SkillName.Homingball)){
-				float skillCD = 1 - pC.SkillCooldown(SkillName.Homingball);
-				GUI.DrawTexture(new Rect(20, Screen.height - 306, 64, 64), pC.skillBeingCast == SkillName.Homingball ? selectedIcon : emptyIcon);
-				if(Event.current.type.Equals(EventType.Repaint)){
-					homingBallMat.SetFloat("_Cutoff", skillCD);
-					homingBallMat.SetColor("_Color", skillCD <= 0 ? Color.white : Color.gray);
-				}
-				Graphics.DrawTexture(new Rect(22.4f, Screen.height - 303.6f, 59.2f, 59.2f), homingBallMat.GetTexture("_MainTex"), homingBallMat);
-				if(GUI.Button(new Rect(20, Screen.height - 306, 64, 64), "", "GButton"))
-					pC.PrepSkill(SkillName.Homingball);
-			}
-            if (pC.HasSkill(SkillName.MeteorBlast))
+            int sIndex = 0;
+            foreach (SkillName skll in pC.GetSkills.Keys)
             {
-                float skillCD = 1 - pC.SkillCooldown(SkillName.MeteorBlast);
-                GUI.DrawTexture(new Rect(20, Screen.height - 380, 64, 64), pC.skillBeingCast == SkillName.MeteorBlast ? selectedIcon : emptyIcon);
+                float skillCD = 1 - pC.SkillCooldown(skll);
+                GUI.DrawTexture(new Rect(20, Screen.height - 84 - sIndex*74, 64, 64), pC.skillBeingCast == skll ? selectedIcon : emptyIcon);
                 if (Event.current.type.Equals(EventType.Repaint))
                 {
-                    metBlastMat.SetFloat("_Cutoff", skillCD);
-                    metBlastMat.SetColor("_Color", skillCD <= 0 ? Color.white : Color.gray);
+                    skillMaterials[skll].SetFloat("_Cutoff", skillCD);
+                    skillMaterials[skll].SetColor("_Color", skillCD <= 0 ? Color.white : Color.gray);
                 }
-                Graphics.DrawTexture(new Rect(22.4f, Screen.height - 377.6f, 59.2f, 59.2f), metBlastMat.GetTexture("_MainTex"), metBlastMat);
-                if (GUI.Button(new Rect(20, Screen.height - 380, 64, 64), "", "GButton"))
-                    pC.PrepSkill(SkillName.MeteorBlast);
-            }
-            if (pC.HasSkill(SkillName.EtherealWalk))
-            {
-                float skillCD = 1 - pC.SkillCooldown(SkillName.EtherealWalk);
-                GUI.DrawTexture(new Rect(20, Screen.height - 454, 64, 64), pC.skillBeingCast == SkillName.EtherealWalk ? selectedIcon : emptyIcon);
-                if (Event.current.type.Equals(EventType.Repaint))
-                {
-                    ethWalkMat.SetFloat("_Cutoff", skillCD);
-                    ethWalkMat.SetColor("_Color", skillCD <= 0 ? Color.white : Color.gray);
-                }
-                Graphics.DrawTexture(new Rect(22.4f, Screen.height - 451.6f, 59.2f, 59.2f), ethWalkMat.GetTexture("_MainTex"), ethWalkMat);
-                if (GUI.Button(new Rect(20, Screen.height - 454, 64, 64), "", "GButton"))
-                    pC.PrepSkill(SkillName.EtherealWalk);
+                Graphics.DrawTexture(new Rect(22.4f, Screen.height - 81.6f - sIndex * 74, 59.2f, 59.2f), skillMaterials[skll].GetTexture("_MainTex"), skillMaterials[skll]);
+                if (GUI.Button(new Rect(20, Screen.height - 84 - sIndex * 74, 64, 64), "", "GButton"))
+                    pC.PrepSkill(skll);
+
+                sIndex++;
             }
 		}
 
@@ -133,7 +90,7 @@ public class UI : MonoBehaviour {
             GUI.Box(new Rect(Screen.width - 165, Screen.height * 0.25f + 5 + i * 55, 140, 50), "");
 
             //Enemy name
-            GUI.Label(new Rect(Screen.width - 160, Screen.height * 0.25f + 5 + i * 55 + 5, 130, 20), enemies[i].name, "GLabelSmall");
+            GUI.Label(new Rect(Screen.width - 160, Screen.height * 0.25f + 5 + i * 55 + 5, 130, 20), new GUIContent(enemies[i].name, enemies[i].name), "GLabelSmall");
 
             //Enemy HP
             GUI.Box(new Rect(Screen.width - 160, Screen.height * 0.25f + 5 + i * 55 + 5 + 22.5f, 130, 18), "");
@@ -156,6 +113,12 @@ public class UI : MonoBehaviour {
             int offsetx = i > 2 ? i - 3 : i;
             int offsety = i > 2 ? 1 : 0;
             GUI.Label(new Rect(Screen.width - 136 + 5 + offsetx * 37, Screen.height - 99 + 5 + offsety * 37, 32, 32), emptyIcon);
+        }
+
+        if (Event.current.type == EventType.Repaint && GUI.tooltip != lastTooltip) {
+            if (lastTooltip != "") lastTooltip = "";
+
+            if (GUI.tooltip != "") lastTooltip = GUI.tooltip;
         }
     }
 

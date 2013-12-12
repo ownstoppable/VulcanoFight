@@ -28,31 +28,14 @@ public class PlayerController : BaseCharacter {
 
         #region SkillInput
         //Skills
-        if (HasSkill(SkillName.Fireball) && attackPossible && Input.GetButtonDown("Skill 1"))
-        {
-            PrepSkill(SkillName.Fireball);
+        if (attackPossible) {
+            int sIndex = 1;
+            foreach (var skll in _skills.Keys)
+            {
+                if (Input.GetButtonDown("Skill " + sIndex)) PrepSkill(skll);
+                sIndex++;
+            }
         }
-        if (HasSkill(SkillName.SelfExplosion) && attackPossible && Input.GetButtonDown("Skill 2"))
-        {
-            PrepSkill(SkillName.SelfExplosion);
-        }
-        if (HasSkill(SkillName.Teleport) && attackPossible && Input.GetButtonDown("Skill 3"))
-        {
-            PrepSkill(SkillName.Teleport);
-        }
-        if (HasSkill(SkillName.Homingball) && attackPossible && Input.GetButtonDown("Skill 4"))
-        {
-            PrepSkill(SkillName.Homingball);
-        }
-        if (HasSkill(SkillName.MeteorBlast) && attackPossible && Input.GetButtonDown("Skill 5"))
-        {
-            PrepSkill(SkillName.MeteorBlast);
-        }
-        if (HasSkill(SkillName.EtherealWalk) && attackPossible && Input.GetButtonDown("Skill 6"))
-        {
-            PrepSkill(SkillName.EtherealWalk);
-        }
-
 
         if (skillBeingCast != SkillName.None && (Input.GetKeyDown(KeyCode.Escape) || Input.GetMouseButtonDown(1)))
         {
@@ -166,7 +149,7 @@ public class PlayerController : BaseCharacter {
             case SkillName.Teleport:
             case SkillName.Homingball:
             case SkillName.MeteorBlast:
-                Skill skll = skills[skill];
+                Skill skll = _skills[skill];
                 if (Time.time - skll.LastUsed > skll.getCooldown * characterStats[StatName.CDR].CurValue)
                 {
                     AimUI.GetComponent<Aim>().ShowUI();
@@ -178,7 +161,7 @@ public class PlayerController : BaseCharacter {
                 }
                 break;
             case SkillName.SelfExplosion:
-                SelfExplosionSkill se = skills[skill] as SelfExplosionSkill;
+                SelfExplosionSkill se = _skills[skill] as SelfExplosionSkill;
                 if (Time.time - se.LastUsed > se.getCooldown * characterStats[StatName.CDR].CurValue)
                 {
                     if (characterStats[StatName.HP].CurValue > se.selfDamage)
@@ -196,7 +179,7 @@ public class PlayerController : BaseCharacter {
                 }
                 break;
             case SkillName.EtherealWalk:
-                EtherealWalkSkill ew = skills[skill] as EtherealWalkSkill;
+                EtherealWalkSkill ew = _skills[skill] as EtherealWalkSkill;
                 if (Time.time - ew.LastUsed > ew.getCooldown * characterStats[StatName.CDR].CurValue) {
                     currentStatus = CharacterMode.Casting;
                     StartCoroutine(LaunchSkill(SkillName.EtherealWalk, Vector3.zero));                    
@@ -239,41 +222,41 @@ public class PlayerController : BaseCharacter {
         switch (skill)
         {
             case SkillName.Fireball:
-                FireballSkill fb = skills[skill] as FireballSkill;
+                FireballSkill fb = _skills[skill] as FireballSkill;
                 fb.LastUsed = Time.time;
                 animation.CrossFade("attack");
                 yield return new WaitForSeconds(fb.CastTime * characterStats[StatName.CSpeed].CurValue);
                 fb.Launch(gameObject, skillDir, characterStats[StatName.KBPower].CurValue, characterStats[StatName.Damage].CurValue);
                 break;
             case SkillName.Teleport:
-                TeleportSkill tp = skills[skill] as TeleportSkill;
+                TeleportSkill tp = _skills[skill] as TeleportSkill;
                 tp.LastUsed = Time.time;
                 yield return new WaitForSeconds(tp.CastTime * characterStats[StatName.CSpeed].CurValue);
                 tp.Launch(gameObject, skillDir);
                 break;
             case SkillName.Homingball:
-                HomingBallSkill hb = skills[skill] as HomingBallSkill;
+                HomingBallSkill hb = _skills[skill] as HomingBallSkill;
                 hb.LastUsed = Time.time;
                 animation.CrossFade("attack");
                 yield return new WaitForSeconds(hb.CastTime * characterStats[StatName.CSpeed].CurValue);
                 hb.Launch(gameObject, skillDir, characterStats[StatName.KBPower].CurValue, characterStats[StatName.Damage].CurValue);
                 break;
             case SkillName.SelfExplosion:
-                SelfExplosionSkill se = skills[skill] as SelfExplosionSkill;
+                SelfExplosionSkill se = _skills[skill] as SelfExplosionSkill;
                 se.LastUsed = Time.time;
                 animation.CrossFade("gethit");
                 yield return new WaitForSeconds(se.CastTime * characterStats[StatName.CSpeed].CurValue);
                 se.Launch(gameObject, characterStats[StatName.KBPower].CurValue, characterStats[StatName.Damage].CurValue);
                 break;
             case SkillName.MeteorBlast:
-                MeteorBlastSkill mb = skills[skill] as MeteorBlastSkill;
+                MeteorBlastSkill mb = _skills[skill] as MeteorBlastSkill;
                 mb.LastUsed = Time.time;
                 animation.CrossFade("attack");
                 yield return new WaitForSeconds(mb.CastTime * characterStats[StatName.CSpeed].CurValue);
                 mb.Launch(gameObject, skillDir, characterStats[StatName.KBPower].CurValue, characterStats[StatName.Damage].CurValue);
                 break;
             case SkillName.EtherealWalk:
-                EtherealWalkSkill ew = skills[skill] as EtherealWalkSkill;
+                EtherealWalkSkill ew = _skills[skill] as EtherealWalkSkill;
                 ew.LastUsed = Time.time;
                 animation.CrossFade("gethit");
                 yield return new WaitForSeconds(ew.CastTime * characterStats[StatName.CSpeed].CurValue);

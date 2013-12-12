@@ -180,7 +180,7 @@ public class ShopUI : MonoBehaviour {
                 GUI.BeginGroup(new Rect(Screen.width * 0.2f, Screen.height * 0.3f, Screen.width * 0.6f, Screen.height * 0.4f));
                 GUI.Box(new Rect(0, 0, Screen.width * 0.4f, Screen.height * 0.4f), "");
                 int maxSkillIcon = (int)Math.Floor((Screen.width * 0.4f - 30) / 74);
-                skillScroll = GUI.BeginScrollView(new Rect(0, 0, Screen.width * 0.4f, Screen.height * 0.4f), skillScroll, new Rect(0, 0, Screen.width * 0.4f - 20, 20 + Mathf.Ceil(((Enum.GetValues(typeof(SkillName)).Length - 1) - pC.SkillCount()) / (float)maxSkillIcon) * 74));
+                skillScroll = GUI.BeginScrollView(new Rect(0, 0, Screen.width * 0.4f, Screen.height * 0.4f), skillScroll, new Rect(0, 0, Screen.width * 0.4f - 20, 20 + Mathf.Ceil(((Enum.GetValues(typeof(SkillName)).Length - 1) - pC.GetSkills.Count) / (float)maxSkillIcon) * 74));
                 int sklIndex = 0;
                 foreach (var item in Enum.GetValues(typeof(SkillName)))
                 {

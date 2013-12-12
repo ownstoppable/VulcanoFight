@@ -21,7 +21,10 @@ public class BaseCharacter : MonoBehaviour {
 
     public Transform nameLabel;
 
-    protected Dictionary<SkillName, Skill> skills;
+    protected Dictionary<SkillName, Skill> _skills;
+    public Dictionary<SkillName, Skill> GetSkills {
+        get { return _skills; }
+    }
 
     protected List<CharacterHit> hitsReceived;
 
@@ -166,6 +169,8 @@ public class BaseCharacter : MonoBehaviour {
                 Destroy(victText, 4);
                 if (characters[0].tag == "Player") characters[0].GetComponent<PlayerController>().AimUI.transform.parent = characters[0].transform;
                 StartCoroutine(characters[0].GetComponent<BaseCharacter>().WinRound());
+                Camera.main.transform.position = new Vector3(characters[0].transform.position.x, 10, characters[0].transform.position.z - 10);
+                Camera.main.transform.LookAt(characters[0].transform.position);
                 GameManager.Instance.FinishRoundI();
             }
         }
@@ -237,6 +242,8 @@ public class BaseCharacter : MonoBehaviour {
                 Destroy(victText, 4);
                 if (characters[0].tag == "Player") characters[0].GetComponent<PlayerController>().AimUI.transform.parent = characters[0].transform;
                 StartCoroutine(characters[0].GetComponent<BaseCharacter>().WinRound());
+                Camera.main.transform.position = new Vector3(characters[0].transform.position.x, 10, characters[0].transform.position.z - 10);
+                Camera.main.transform.LookAt(characters[0].transform.position);
                 GameManager.Instance.FinishRoundI();
             }
         }
@@ -332,33 +339,29 @@ public class BaseCharacter : MonoBehaviour {
 
     public void InitializeSkills() {
         //Fill Skill list
-        skills = new Dictionary<SkillName, Skill>();
-        skills.Add(SkillName.Fireball, new FireballSkill(2, 200, 10, 10, 0.5f));
-        skills.Add(SkillName.SelfExplosion, new SelfExplosionSkill(5, 100, 30, 4, 0.5f, 50, 0.7f));
+        _skills = new Dictionary<SkillName, Skill>();
+        _skills.Add(SkillName.Fireball, new FireballSkill(2, 200, 10, 10, 0.5f));
+        _skills.Add(SkillName.SelfExplosion, new SelfExplosionSkill(5, 100, 30, 4, 0.5f, 50, 0.7f));
     }
 
     public bool HasSkill(SkillName skill) {
-        return skills.ContainsKey(skill);
-    }
-
-    public int SkillCount() {
-        return skills.Count;
+        return _skills.ContainsKey(skill);
     }
 
     public void AddSkill(SkillName skill) {
         switch (skill)
         {
             case SkillName.Teleport:
-                skills.Add(skill, new TeleportSkill(10, 10));                
+                _skills.Add(skill, new TeleportSkill(10, 10));                
                 break;
             case SkillName.Homingball:
-                skills.Add(skill, new HomingBallSkill(8, 200, 10, 5, 10, 0.5f));
+                _skills.Add(skill, new HomingBallSkill(8, 200, 10, 5, 10, 0.5f));
                 break;
             case SkillName.MeteorBlast:
-                skills.Add(skill, new MeteorBlastSkill(8, 300, 20, 0.5f));
+                _skills.Add(skill, new MeteorBlastSkill(8, 300, 20, 0.5f));
                 break;
             case SkillName.EtherealWalk:
-                skills.Add(skill, new EtherealWalkSkill(10, 3, 3));
+                _skills.Add(skill, new EtherealWalkSkill(10, 3, 3));
                 break;
             default:
                 break;
@@ -416,6 +419,6 @@ public class BaseCharacter : MonoBehaviour {
     }
 
 	public float SkillCooldown(SkillName name){
-		return Mathf.Clamp01((Time.time - skills[name].LastUsed)/(skills[name].getCooldown * characterStats[StatName.CDR].CurValue));
+		return Mathf.Clamp01((Time.time - _skills[name].LastUsed)/(_skills[name].getCooldown * characterStats[StatName.CDR].CurValue));
 	}
 }

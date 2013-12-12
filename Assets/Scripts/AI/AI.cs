@@ -66,7 +66,7 @@ public class AI : BaseCharacter {
         #region Attack
         if (attackPossible)
         {
-            FireballSkill fb = skills[SkillName.Fireball] as FireballSkill;
+            FireballSkill fb = _skills[SkillName.Fireball] as FireballSkill;
             if (Time.time - fb.LastUsed > (fb.getCooldown * characterStats[StatName.CDR].CurValue + Random.Range(0, 0.5f)))
             {
                 List<GameObject> enemies = new List<GameObject>(GameManager.Instance.GetAliveCharacters());

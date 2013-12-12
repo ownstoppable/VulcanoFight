@@ -37,8 +37,8 @@
 6- Other
 	6.1 - Random Bot Names
 	6.2 - Choose player name
-	6.3 - Item/Skills Tooltip
+	(WIP)6.3 - Item/Skills Tooltip
 	6.4 - Camera movement
-	6.5 - Camera zoom on win
-	6.6 - Rework on the input code
+	(Done)6.5 - Camera zoom on win
+	(Done)6.6 - Rework on the input code
 	6.7 - Code Clean up <-------
