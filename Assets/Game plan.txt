@@ -10,8 +10,9 @@
 	(Done)1.9 - Meteoric Plate Mail (+15% Armor)
 	
 2- Skills
-	2.1 - Ethereal Walk - Become invisible for X seconds, and gain +Y speed.
+	(Done)2.1 - Ethereal Walk - Becomes hollow for X seconds, and gains +Y speed.
 	(Done)2.2 - Meteor Blast - After X seconds a meteor comes from the sky.
+	2.3 - Time Travel - After X seconds the player will return to the activation position with the activation HP and KBR.
 	
 3- Design
 	3.1 - Platform redesign
@@ -34,8 +35,10 @@
 	5.6 - Shop scene music/sounds
 	
 6- Other
-	6.1- Random Bot Names
-	6.2- Choose player name
-	6.3- Item/Skills Tooltip
-	6.4- Camera movement
-	6.5- Camera zoom on win
+	6.1 - Random Bot Names
+	6.2 - Choose player name
+	6.3 - Item/Skills Tooltip
+	6.4 - Camera movement
+	6.5 - Camera zoom on win
+	6.6 - Rework on the input code
+	6.7 - Code Clean up <-------

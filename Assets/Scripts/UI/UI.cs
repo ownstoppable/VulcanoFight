@@ -11,6 +11,7 @@ public class UI : MonoBehaviour {
 	public Material teleportMat;
 	public Material homingBallMat;
     public Material metBlastMat;
+    public Material ethWalkMat;
     public Texture2D emptyIcon;
 	public Texture2D selectedIcon;
     public GUISkin mySkin;
@@ -90,6 +91,19 @@ public class UI : MonoBehaviour {
                 Graphics.DrawTexture(new Rect(22.4f, Screen.height - 377.6f, 59.2f, 59.2f), metBlastMat.GetTexture("_MainTex"), metBlastMat);
                 if (GUI.Button(new Rect(20, Screen.height - 380, 64, 64), "", "GButton"))
                     pC.PrepSkill(SkillName.MeteorBlast);
+            }
+            if (pC.HasSkill(SkillName.EtherealWalk))
+            {
+                float skillCD = 1 - pC.SkillCooldown(SkillName.EtherealWalk);
+                GUI.DrawTexture(new Rect(20, Screen.height - 454, 64, 64), pC.skillBeingCast == SkillName.EtherealWalk ? selectedIcon : emptyIcon);
+                if (Event.current.type.Equals(EventType.Repaint))
+                {
+                    ethWalkMat.SetFloat("_Cutoff", skillCD);
+                    ethWalkMat.SetColor("_Color", skillCD <= 0 ? Color.white : Color.gray);
+                }
+                Graphics.DrawTexture(new Rect(22.4f, Screen.height - 451.6f, 59.2f, 59.2f), ethWalkMat.GetTexture("_MainTex"), ethWalkMat);
+                if (GUI.Button(new Rect(20, Screen.height - 454, 64, 64), "", "GButton"))
+                    pC.PrepSkill(SkillName.EtherealWalk);
             }
 		}
 

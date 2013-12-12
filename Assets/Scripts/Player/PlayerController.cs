@@ -48,6 +48,10 @@ public class PlayerController : BaseCharacter {
         {
             PrepSkill(SkillName.MeteorBlast);
         }
+        if (HasSkill(SkillName.EtherealWalk) && attackPossible && Input.GetButtonDown("Skill 6"))
+        {
+            PrepSkill(SkillName.EtherealWalk);
+        }
 
 
         if (skillBeingCast != SkillName.None && (Input.GetKeyDown(KeyCode.Escape) || Input.GetMouseButtonDown(1)))
@@ -180,8 +184,8 @@ public class PlayerController : BaseCharacter {
                     if (characterStats[StatName.HP].CurValue > se.selfDamage)
                     {
                         characterStats[StatName.HP].CurValue -= se.selfDamage;
-                        StartCoroutine(LaunchSkill(SkillName.SelfExplosion, Vector3.zero));
                         currentStatus = CharacterMode.Casting;
+                        StartCoroutine(LaunchSkill(SkillName.SelfExplosion, Vector3.zero));                        
                     }
                     else {
                         Debug.Log("Not enough HP for SelfExplosion");
@@ -189,6 +193,17 @@ public class PlayerController : BaseCharacter {
                 }
                 else {
                     Debug.Log("Self Explosion in cooldown");
+                }
+                break;
+            case SkillName.EtherealWalk:
+                EtherealWalkSkill ew = skills[skill] as EtherealWalkSkill;
+                if (Time.time - ew.LastUsed > ew.getCooldown * characterStats[StatName.CDR].CurValue) {
+                    currentStatus = CharacterMode.Casting;
+                    StartCoroutine(LaunchSkill(SkillName.EtherealWalk, Vector3.zero));                    
+                }
+                else
+                {
+                    Debug.Log("Ethereal Walk in cooldown");
                 }
                 break;
             default:
@@ -256,6 +271,13 @@ public class PlayerController : BaseCharacter {
                 animation.CrossFade("attack");
                 yield return new WaitForSeconds(mb.CastTime * characterStats[StatName.CSpeed].CurValue);
                 mb.Launch(gameObject, skillDir, characterStats[StatName.KBPower].CurValue, characterStats[StatName.Damage].CurValue);
+                break;
+            case SkillName.EtherealWalk:
+                EtherealWalkSkill ew = skills[skill] as EtherealWalkSkill;
+                ew.LastUsed = Time.time;
+                animation.CrossFade("gethit");
+                yield return new WaitForSeconds(ew.CastTime * characterStats[StatName.CSpeed].CurValue);
+                StartCoroutine(ew.Launch(gameObject));
                 break;
             case SkillName.None:
                 break;

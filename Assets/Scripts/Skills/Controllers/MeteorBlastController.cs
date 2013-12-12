@@ -31,6 +31,7 @@ public class MeteorBlastController : MonoBehaviour {
                 if (colls[i].gameObject != owner && (colls[i].tag == "Enemy" || colls[i].tag == "Player")) {
                     Vector3 direction = colls[i].transform.position - myTransform.position;
                     BaseCharacter bC = colls[i].GetComponent<BaseCharacter>();
+                    if (bC.IsHollow) return;
                     bC.AddImpact(direction, force);
                     bC.ReceiveDamage(damage, knockback, owner, false);
                     owner.GetComponent<BaseCharacter>().HitGold(SkillName.MeteorBlast);

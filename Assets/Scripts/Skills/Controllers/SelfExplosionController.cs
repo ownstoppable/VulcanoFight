@@ -25,9 +25,9 @@ public class SelfExplosionController : MonoBehaviour {
         {
             if (other.tag != "Skillshot")
             {
-
                 Vector3 direction = other.transform.position - myTransform.position;
                 BaseCharacter bC = other.GetComponent<BaseCharacter>();
+                if (bC.IsHollow) return;
                 bC.AddImpact(direction, force);
                 bC.ReceiveDamage(damage, knockback, owner, false);
                 owner.GetComponent<BaseCharacter>().HitGold(SkillName.SelfExplosion);

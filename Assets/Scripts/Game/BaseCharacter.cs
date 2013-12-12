@@ -27,6 +27,17 @@ public class BaseCharacter : MonoBehaviour {
 
     public bool attackPossible;
 
+    public GameObject hatGO;
+    public GameObject staffGO;
+
+    protected bool _hollow;
+    public bool IsHollow
+    {
+        get { return _hollow; }
+        set { _hollow = value; }
+    }
+
+
     protected enum CharacterMode
     {
         Movement,
@@ -345,6 +356,9 @@ public class BaseCharacter : MonoBehaviour {
                 break;
             case SkillName.MeteorBlast:
                 skills.Add(skill, new MeteorBlastSkill(8, 300, 20, 0.5f));
+                break;
+            case SkillName.EtherealWalk:
+                skills.Add(skill, new EtherealWalkSkill(10, 3, 3));
                 break;
             default:
                 break;

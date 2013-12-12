@@ -12,6 +12,7 @@ public class ShopUI : MonoBehaviour {
     public itemUI homingBallUI;
     public itemUI teleportUI;
     public itemUI meteorBallUI;
+    public itemUI etherealWalkUI;
 
     public itemUI staffUI;
     public itemUI bootsUI;
@@ -59,6 +60,7 @@ public class ShopUI : MonoBehaviour {
         skills.Add(SkillName.Homingball, homingBallUI);
         skills.Add(SkillName.Teleport, teleportUI);
         skills.Add(SkillName.MeteorBlast, meteorBallUI);
+        skills.Add(SkillName.EtherealWalk, etherealWalkUI);
 
         items = new Dictionary<ItemName, itemUI>();
         items.Add(ItemName.CarversStaff, staffUI);
