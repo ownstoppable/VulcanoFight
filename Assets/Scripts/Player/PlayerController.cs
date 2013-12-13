@@ -143,13 +143,14 @@ public class PlayerController : BaseCharacter {
 
     public void PrepSkill(SkillName skill)
     {
+        Skill skll = _skills[skill];
         switch (skill)
         {
             case SkillName.Fireball:
             case SkillName.Teleport:
             case SkillName.Homingball:
             case SkillName.MeteorBlast:
-                Skill skll = _skills[skill];
+                
                 if (Time.time - skll.LastUsed > skll.getCooldown * characterStats[StatName.CDR].CurValue)
                 {
                     AimUI.GetComponent<Aim>().ShowUI();
@@ -161,7 +162,7 @@ public class PlayerController : BaseCharacter {
                 }
                 break;
             case SkillName.SelfExplosion:
-                SelfExplosionSkill se = _skills[skill] as SelfExplosionSkill;
+                SelfExplosionSkill se = (SelfExplosionSkill)skll;
                 if (Time.time - se.LastUsed > se.getCooldown * characterStats[StatName.CDR].CurValue)
                 {
                     if (characterStats[StatName.HP].CurValue > se.selfDamage)
@@ -179,14 +180,15 @@ public class PlayerController : BaseCharacter {
                 }
                 break;
             case SkillName.EtherealWalk:
-                EtherealWalkSkill ew = _skills[skill] as EtherealWalkSkill;
-                if (Time.time - ew.LastUsed > ew.getCooldown * characterStats[StatName.CDR].CurValue) {
+            case SkillName.TimeTravel:
+                if (Time.time - skll.LastUsed > skll.getCooldown * characterStats[StatName.CDR].CurValue)
+                {
                     currentStatus = CharacterMode.Casting;
-                    StartCoroutine(LaunchSkill(SkillName.EtherealWalk, Vector3.zero));                    
+                    StartCoroutine(LaunchSkill(skill, Vector3.zero));                    
                 }
                 else
                 {
-                    Debug.Log("Ethereal Walk in cooldown");
+                    Debug.Log(skll.ToString() + " in cooldown");
                 }
                 break;
             default:
@@ -261,6 +263,13 @@ public class PlayerController : BaseCharacter {
                 animation.CrossFade("gethit");
                 yield return new WaitForSeconds(ew.CastTime * characterStats[StatName.CSpeed].CurValue);
                 StartCoroutine(ew.Launch(gameObject));
+                break;
+            case SkillName.TimeTravel:
+                TimeTravelSkill tt = _skills[skill] as TimeTravelSkill;
+                tt.LastUsed = Time.time;
+                animation.CrossFade("gethit");
+                yield return new WaitForSeconds(tt.CastTime * characterStats[StatName.CSpeed].CurValue);
+                StartCoroutine(tt.Launch(gameObject));
                 break;
             case SkillName.None:
                 break;

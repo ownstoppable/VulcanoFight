@@ -363,6 +363,9 @@ public class BaseCharacter : MonoBehaviour {
             case SkillName.EtherealWalk:
                 _skills.Add(skill, new EtherealWalkSkill(10, 3, 3));
                 break;
+            case SkillName.TimeTravel:
+                _skills.Add(skill, new TimeTravelSkill(8, 4));
+                break;
             default:
                 break;
         }
@@ -397,7 +400,7 @@ public class BaseCharacter : MonoBehaviour {
         characterStats.Add(StatName.KBPower, new BaseStat());
         characterStats.Add(StatName.KBResist, new BaseStat());
         characterStats.Add(StatName.Speed, new BaseStat(5));
-        characterStats.Add(StatName.Gold, new BaseStat(500));
+        characterStats.Add(StatName.Gold, new BaseStat(5000));
         characterStats.Add(StatName.Mass, new BaseStat(3));
         characterStats.Add(StatName.Kills, new BaseStat());
     }

@@ -37,5 +37,6 @@ public enum SkillName
     SelfExplosion,
     MeteorBlast,
     EtherealWalk,
+    TimeTravel,
     None
 }

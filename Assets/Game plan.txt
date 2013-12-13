@@ -12,7 +12,10 @@
 2- Skills
 	(Done)2.1 - Ethereal Walk - Becomes hollow for X seconds, and gains +Y speed.
 	(Done)2.2 - Meteor Blast - After X seconds a meteor comes from the sky.
-	2.3 - Time Travel - After X seconds the player will return to the activation position with the activation HP and KBR.
+	(Done)2.3 - Time Travel - After 4 seconds the player will return to the cast position with the cast HP and KBR.
+	2.4 - Freezing Field - After X seconds all players in the area are frozen for Y seconds.
+	2.5 - Vampiric arrow - Heals the caster for 50% of the damage dealt.
+	2.6 - Shoulder bash - Rushes forward and knocks back any enemy hit.
 	
 3- Design
 	3.1 - Platform redesign
@@ -37,8 +40,7 @@
 6- Other
 	6.1 - Random Bot Names
 	6.2 - Choose player name
-	(WIP)6.3 - Item/Skills Tooltip
-	6.4 - Camera movement
+	6.3 - Add inventory to Shop UI
+	6.4 - Code Clean up <-------
 	(Done)6.5 - Camera zoom on win
 	(Done)6.6 - Rework on the input code
-	6.7 - Code Clean up <-------

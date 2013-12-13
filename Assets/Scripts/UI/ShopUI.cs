@@ -13,6 +13,7 @@ public class ShopUI : MonoBehaviour {
     public itemUI teleportUI;
     public itemUI meteorBallUI;
     public itemUI etherealWalkUI;
+    public itemUI timeTravelUI;
 
     public itemUI staffUI;
     public itemUI bootsUI;
@@ -61,6 +62,7 @@ public class ShopUI : MonoBehaviour {
         skills.Add(SkillName.Teleport, teleportUI);
         skills.Add(SkillName.MeteorBlast, meteorBallUI);
         skills.Add(SkillName.EtherealWalk, etherealWalkUI);
+        skills.Add(SkillName.TimeTravel, timeTravelUI);
 
         items = new Dictionary<ItemName, itemUI>();
         items.Add(ItemName.CarversStaff, staffUI);
@@ -203,15 +205,16 @@ public class ShopUI : MonoBehaviour {
                         GUI.TextArea(new Rect(10, 50, Screen.width * 0.2f - 20, Screen.height * 0.25f), skills[(SkillName)selectedSkill].details, "GTextArea");
                         GUI.Label(new Rect(10, Screen.height * 0.4f - 40, 100, 30), skills[(SkillName)selectedSkill].price + "g", "GLabelSmall");
                         if (GUI.Button(new Rect(Screen.width * 0.2f - 50, Screen.height * 0.4f - 40, 50, 30), "Buy", "GLabelSmall")) {
-                            if (pC.HasGold(skills[(SkillName)selectedSkill].price))
+                            if (pC.GetSkills.Count < 6)
                             {
-                                pC.AddSkill((SkillName)selectedSkill);
-                                selectedSkill = -1;
+                                if (pC.HasGold(skills[(SkillName)selectedSkill].price))
+                                {
+                                        pC.AddSkill((SkillName)selectedSkill);
+                                        selectedSkill = -1;
+                                }
+                                else Debug.Log("Not enough money " + skills[(SkillName)selectedSkill].price);
                             }
-                            else
-                            {
-                                Debug.Log("Not enough money " + skills[(SkillName)selectedSkill].price);
-                            }
+                            else Debug.Log("You have the maximum number of skills");
                         }
                     }
                     GUI.EndGroup();
@@ -247,15 +250,17 @@ public class ShopUI : MonoBehaviour {
                         GUI.TextArea(new Rect(10, 50, Screen.width * 0.2f - 20, Screen.height * 0.25f), items[(ItemName)selectedItem].details, "GTextArea");
                         GUI.Label(new Rect(10, Screen.height * 0.4f - 40, 100, 30), items[(ItemName)selectedItem].price + "g", "GLabelSmall");
                         if (GUI.Button(new Rect(Screen.width * 0.2f - 50, Screen.height * 0.4f - 40, 50, 30), "Buy", "GLabelSmall")) {
-                            if (pC.HasGold(items[(ItemName)selectedItem].price))
+                            if (pC.GetInventory.Count < 6)
                             {
-                                pC.AddItem((ItemName)selectedItem, new Item((ItemName)selectedItem, items[(ItemName)selectedItem].texture, items[(ItemName)selectedItem].name));
-                                selectedItem = -1;
+                                if (pC.HasGold(items[(ItemName)selectedItem].price))
+                                {
+
+                                        pC.AddItem((ItemName)selectedItem, new Item((ItemName)selectedItem, items[(ItemName)selectedItem].texture, items[(ItemName)selectedItem].name, items[(ItemName)selectedItem].details));
+                                        selectedItem = -1;
+                                }
+                                else Debug.Log("Not enough money " + items[(ItemName)selectedItem].price);
                             }
-                            else
-                            {
-                                Debug.Log("Not enough money " + items[(ItemName)selectedItem].price);
-                            }
+                            else Debug.Log("You have the maximum number of items");
                         }
                     }
                     GUI.EndGroup();

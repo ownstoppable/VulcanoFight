@@ -12,6 +12,7 @@ public class UI : MonoBehaviour {
 	public Material homingBallMat;
     public Material metBlastMat;
     public Material ethWalkMat;
+    public Material timeTravelMat;
     public Texture2D emptyIcon;
 	public Texture2D selectedIcon;
     public GUISkin mySkin;
@@ -30,12 +31,12 @@ public class UI : MonoBehaviour {
         skillMaterials.Add(SkillName.Homingball, homingBallMat);
         skillMaterials.Add(SkillName.MeteorBlast, metBlastMat);
         skillMaterials.Add(SkillName.EtherealWalk, ethWalkMat);
+        skillMaterials.Add(SkillName.TimeTravel, timeTravelMat);
 	}
 
     void OnGUI() {
         GUI.skin = mySkin;
 
-        if (lastTooltip != "") GUI.Label(new Rect(Screen.width * 0.5f - 50, 20, 100, 30), lastTooltip);
 
         //Game Time
         if (GameManager.Instance.GetTimePassed() != -1)
@@ -57,7 +58,7 @@ public class UI : MonoBehaviour {
                     skillMaterials[skll].SetColor("_Color", skillCD <= 0 ? Color.white : Color.gray);
                 }
                 Graphics.DrawTexture(new Rect(22.4f, Screen.height - 81.6f - sIndex * 74, 59.2f, 59.2f), skillMaterials[skll].GetTexture("_MainTex"), skillMaterials[skll]);
-                if (GUI.Button(new Rect(20, Screen.height - 84 - sIndex * 74, 64, 64), "", "GButton"))
+                if (GUI.Button(new Rect(20, Screen.height - 84 - sIndex * 74, 64, 64), (sIndex+1).ToString(), "GSkill"))
                     pC.PrepSkill(skll);
 
                 sIndex++;
@@ -90,7 +91,7 @@ public class UI : MonoBehaviour {
             GUI.Box(new Rect(Screen.width - 165, Screen.height * 0.25f + 5 + i * 55, 140, 50), "");
 
             //Enemy name
-            GUI.Label(new Rect(Screen.width - 160, Screen.height * 0.25f + 5 + i * 55 + 5, 130, 20), new GUIContent(enemies[i].name, enemies[i].name), "GLabelSmall");
+            GUI.Label(new Rect(Screen.width - 160, Screen.height * 0.25f + 5 + i * 55 + 5, 130, 20), enemies[i].name, "GLabelSmall");
 
             //Enemy HP
             GUI.Box(new Rect(Screen.width - 160, Screen.height * 0.25f + 5 + i * 55 + 5 + 22.5f, 130, 18), "");
@@ -105,7 +106,7 @@ public class UI : MonoBehaviour {
         {
             int offsetx = f > 2 ? f - 3 : f;
             int offsety = f > 2 ? 1 : 0;
-            GUI.Label(new Rect(Screen.width - 136 + 5 + offsetx * 37, Screen.height - 99 + 5 + offsety * 37, 32, 32), item.Value.Icon);
+            GUI.Label(new Rect(Screen.width - 136 + 5 + offsetx * 37, Screen.height - 99 + 5 + offsety * 37, 32, 32), new GUIContent(item.Value.Icon, item.Value.Tooltip));
             f++;
         }
         for (int i = f; i < 6; i++)
@@ -113,6 +114,17 @@ public class UI : MonoBehaviour {
             int offsetx = i > 2 ? i - 3 : i;
             int offsety = i > 2 ? 1 : 0;
             GUI.Label(new Rect(Screen.width - 136 + 5 + offsetx * 37, Screen.height - 99 + 5 + offsety * 37, 32, 32), emptyIcon);
+        }
+
+        if (lastTooltip != "")
+        {
+            Vector2 tpSize = GUI.skin.GetStyle("GBox").CalcSize(new GUIContent(lastTooltip));
+            tpSize.x += 40;
+            tpSize.y += 10;
+            Rect tpRect = new Rect(Input.mousePosition.x + tpSize.x > Screen.width ? Input.mousePosition.x - tpSize.x : Input.mousePosition.x,
+                Input.mousePosition.y - tpSize.y < 0 ? Screen.height - Input.mousePosition.y - tpSize.y : Screen.height - Input.mousePosition.y,
+                tpSize.x, tpSize.y);
+            GUI.Box(tpRect, lastTooltip, "GBox");
         }
 
         if (Event.current.type == EventType.Repaint && GUI.tooltip != lastTooltip) {

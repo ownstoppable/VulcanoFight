@@ -19,18 +19,26 @@ public class Item {
 		get{return _name;}
 		set{_name = value;}
 	}
-    
+
+    private string _tooltip;
+    public string Tooltip
+    {
+        get { return _tooltip; }
+        set { _tooltip = value; }
+    }
+
 
     public Item()
     {
         _modifiedStats = new Dictionary<StatName, BaseStat>();
     }
 
-    public Item(ItemName name, Texture2D ic, string itemName)
+    public Item(ItemName name, Texture2D ic, string itemName, string tooltip)
     {
         _modifiedStats = new Dictionary<StatName, BaseStat>();
         _icon = ic;
 		_name = itemName;
+        _tooltip = tooltip;
         switch (name)
         {
             case ItemName.HauntersBoots:
